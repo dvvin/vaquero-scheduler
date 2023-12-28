@@ -12,8 +12,8 @@ export default function Home() {
       <header className="w-full text-gray-700 bg-white border-t border-gray-100 shadow-sm body-font">
         <Navbar />
       </header>
-      <SignIn />
-       <StudentInfo />
+      {/* <SignIn /> */}
+       {/* <StudentInfo /> */}
       {/* <UserComponent /> */}
       <CSCI_Catalog />
     </main>
