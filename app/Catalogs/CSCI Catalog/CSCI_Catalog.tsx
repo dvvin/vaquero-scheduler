@@ -1,50 +1,42 @@
+import { useEffect, useState } from 'react';
 import CSCI_CatalogInfo from './Info';
 
-interface ClassInfo {
-    courseNumber: string;
+interface ProfessorInfo {
     name: string;
-    professor: string;
-    difficulty: number; // Updated to number
-    style: string;
-    campus: string;
+    difficultyRating: number;
+    teachingStyle: string;
+    campus: string[];
     time: string[];
 }
 
+interface CourseInfo {
+    number: string;
+    name: string;
+    professors: ProfessorInfo[];
+}
+
 const CSCI_Catalog: React.FC = () => {
-    const classes: ClassInfo[] = [
-        {
-            courseNumber: "1101",
-            name: "Introduction to Computer Science",
-            professor: "Tim Wylie",
-            difficulty: 9, // Example rating
-            style: "Free",
-            campus: "Edinburg",
-            time: ["9:00 A.M", "10:00 A.M", "11:00 A.M"]
-        },
-        {
-            courseNumber: "1202",
-            name: "Advanced Programming",
-            professor: "Jane Doe",
-            difficulty: 6, // Example rating
-            style: "Strict",
-            campus: "Brownsville",
-            time: ["8:00 A.M", "12:00 P.M", "1:00 P.M"]
-        },
-        {
-            courseNumber: "1301",
-            name: "Operating Systems",
-            professor: "Carlos Pena",
-            difficulty: 3, // Example rating
-            style: "Mixed",
-            campus: "Edinburg",
-            time: ["4:00 P.M", "5:00 P.M", "8:00 P.M"]
-        }
-    ];
+    const [courses, setCourses] = useState<CourseInfo[]>([]);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const response = await fetch('/api/csci-catalog');
+                const data = await response.json();
+                setCourses(data);
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+            }
+        };
+
+        fetchCourses();
+    }, []);
 
     return (
         <>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/loopple-public-assets@main/riva-dashboard-tailwind/riva-dashboard.css" /><div className="flex flex-wrap -mx-3 mb-5">
-                <div className="w-3/4 max-w-full px-3 mb-6 pt-60 mx-auto">
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/loopple-public-assets@main/riva-dashboard-tailwind/riva-dashboard.css" />
+            <div className="flex flex-wrap -mx-3 mb-5">
+                <div className="w-3/4  mb-6 pt-40 mx-auto">
                     <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
                         <div className="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
                             <div className="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent">
@@ -53,21 +45,16 @@ const CSCI_Catalog: React.FC = () => {
                                 </h3>
                             </div>
                             <div className="flex-auto block py-8 pt-6 px-9">
-                                <div className="overflow-x-auto">
+                                <div className="overflow-x-hidden">
                                     <table className="w-full my-0 align-middle text-dark border-neutral-200">
                                         <thead className="align-bottom">
                                             <tr className="font-semibold text-[0.95rem] text-secondary-dark">
                                                 <th className="pb-3 pl-0 text-start min-w-[175px]">COURSE</th>
                                                 <th className="pb-3 pl-14 text-start min-w-[175px]">CLASS</th>
-                                                {/* <th className="pb-3 pr-4 text-center min-w-[100px]">PROFESSOR</th>
-                                                <th className="pb-3 pl-8 text-center min-w-[175px]">DIFFICULTY</th>
-                                                <th className="pb-3 pr-6 text-center min-w-[175px]">STYLE</th>
-                                                <th className="pb-3 pr-6 text-center min-w-[175px]">CAMPUS</th>
-                                                <th className="pb-3 text-end min-w-[50px]">TIMES</th> */}
                                             </tr>
                                         </thead>
 
-                                        <CSCI_CatalogInfo classes={classes} />
+                                        <CSCI_CatalogInfo courses={courses} />
 
                                     </table>
                                 </div>

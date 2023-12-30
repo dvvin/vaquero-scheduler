@@ -1,39 +1,41 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-interface ClassInfo {
-    courseNumber: string;
+interface ProfessorInfo {
     name: string;
-    professor: string;
-    difficulty: number;
-    style: string;
-    campus: string;
+    difficultyRating: number;
+    teachingStyle: string;
+    campus: string[];
     time: string[];
 }
 
-interface CSCI_CatalogInfoProps {
-    classes: ClassInfo[];
+interface CourseInfo {
+    number: string;
+    name: string;
+    professors: ProfessorInfo[];
 }
 
-const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ classes }) => {
+interface CSCI_CatalogInfoProps {
+    courses: CourseInfo[];
+}
+
+const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ courses }) => {
     const [visibleTimes, setVisibleTimes] = useState<string[]>([]);
     const [showPopup, setShowPopup] = useState(false);
     const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
     const [popupWidth, setPopupWidth] = useState(0);
     const [isPositioned, setIsPositioned] = useState(false);
     const popupRef = useRef<HTMLDivElement>(null);
-
     const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
 
-    const toggleCourseDetails = (courseNumber: string) => {
+    const toggleCourseDetails = (number: string) => {
         setExpandedCourses(prev => {
-            if (prev.includes(courseNumber)) {
-                return prev.filter(cn => cn !== courseNumber);
+            if (prev.includes(number)) {
+                return prev.filter(cn => cn !== number);
             } else {
-                return [...prev, courseNumber];
+                return [...prev, number];
             }
         });
     };
-
 
     const handleOutsideClick = (event: MouseEvent) => {
         if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
@@ -80,22 +82,22 @@ const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ classes }) => {
 
     return (
         <tbody>
-            {classes.map((classInfo) => (
+            {courses.map((course) => (
                 <>
-                    <tr key={classInfo.courseNumber} className="border-b border-dashed last:border-b-0">
+                    <tr key={course.number} className="border-b border-dashed last:border-b-0">
                         <td className="p-3 text-start">
-                            {classInfo.courseNumber}
+                            {course.number}
                         </td>
-                        <td className="p-3 pl-0" onClick={() => toggleCourseDetails(classInfo.courseNumber)}>
+                        <td className="p-3 pl-0" onClick={() => toggleCourseDetails(course.number)}>
                             <a className="font-semibold cursor-pointer text-lg/normal text-secondary-inverse hover:text-primary">
-                                {classInfo.name}
+                                {course.name}
                             </a>
                         </td>
                     </tr>
-                    {expandedCourses.includes(classInfo.courseNumber) && (
+                    {expandedCourses.includes(course.number) && (
                         <tr className="border-b border-dashed last:border-b-0">
                             <td colSpan={7}>
-                                <div className="w-full overflow-x-auto">
+                                <div className="w-full overflow-x-hidden">
                                     <table className="min-w-full">
                                         <thead>
                                             <tr className="font-semibold text-[0.95rem] text-secondary-dark">
@@ -106,62 +108,65 @@ const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ classes }) => {
                                                 <th className="text-center p-3">TIME</th>
                                             </tr>
                                         </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td className="p-3 pr-10 text-center">
-                                                <span className="font-semibold text-light-inverse text-md/normal">
-                                                    {classInfo.professor}
-                                                </span>
-                                            </td>
-                                            <td className="pl-0 text-center">
-                                                <span className={
-                                                    `text-start align-baseline inline-flex px-4 py-3 mr-auto items-center
-                                                    font-semibold text-[.95rem] leading-none rounded-lg
-                                                    ${classInfo.difficulty >= 1 && classInfo.difficulty <= 4
-                                                        ? "text-success bg-success-light"
-                                                        : classInfo.difficulty >= 5 && classInfo.difficulty <= 7
-                                                            ? "text-warning bg-warning-light"
-                                                            : "text-danger bg-danger-light"
-                                                    }`}>
-                                                    {classInfo.difficulty >= 1 && classInfo.difficulty <= 4
-                                                        ? "Low"
-                                                        : classInfo.difficulty >= 5 && classInfo.difficulty <= 7
-                                                            ? "Moderate"
-                                                            : "High"
-                                                    }
-                                                </span>
-                                            </td>
+                                        <tbody>
+                                            {course.professors.map((professor, index) => (
+                                                <tr key={index}>
 
-                                            <td className="p-3 pl-8 text-center">
-                                                <span className="font-semibold text-light-inverse text-md/normal">
-                                                    {classInfo.style}
-                                                </span>
-                                            </td>
+                                                    <td className="p-3 pr-10 text-center">
+                                                        <span className="font-semibold text-light-inverse text-md/normal">
+                                                            {professor.name}
+                                                        </span>
+                                                    </td>
+                                                    <td className="pl-0 text-center">
+                                                        <span className={
+                                                            `text-start align-baseline inline-flex px-4 py-3 mr-auto items-center
+                                                                font-semibold text-[.95rem] leading-none rounded-lg
+                                                                ${professor.difficultyRating >= 1 && professor.difficultyRating <= 4
+                                                                ? "text-success bg-success-light"
+                                                                : professor.difficultyRating >= 5 && professor.difficultyRating <= 7
+                                                                    ? "text-warning bg-warning-light"
+                                                                    : "text-danger bg-danger-light"
+                                                            }`}>
+                                                            {professor.difficultyRating >= 1 && professor.difficultyRating <= 4
+                                                                ? "Low"
+                                                                : professor.difficultyRating >= 5 && professor.difficultyRating <= 7
+                                                                    ? "Moderate"
+                                                                    : "High"
+                                                            }
+                                                        </span>
+                                                    </td>
 
-                                            <td className="p-3 pl-10 text-center">
-                                                <span className="font-semibold text-light-inverse text-md/normal">
-                                                    {classInfo.campus}
-                                                </span>
-                                            </td>
+                                                    <td className="p-3 pl-8 text-center">
+                                                        <span className="font-semibold text-light-inverse text-md/normal">
+                                                            {professor.teachingStyle}
+                                                        </span>
+                                                    </td>
 
-                                            <td className="p-3 pr-2 text-center">
-                                                <button onClick={(e) => togglePopup(classInfo.time, e)}
-                                                    className="relative text-secondary-dark bg-light-dark hover:text-primary
-                                                    flex items-center h-[25px] w-[25px] text-base font-medium leading-normal text-center
-                                                    align-middle cursor-pointer rounded-2xl transition-colors duration-200 ease-in-out shadow-none
-                                                    border-0 justify-center m-auto">
-                                                    <span className="flex items-center justify-center pl-0 m-0 leading-none shrink-0 ">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                                                            stroke="currentColor" className="w-4 h-4 scale-x-[-1]">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                                                        </svg>
-                                                    </span>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                                    <td className="p-3 pl-10 text-center">
+                                                        <span className="font-semibold text-light-inverse text-md/normal">
+                                                            {professor.campus.join(', ')}
+                                                        </span>
+                                                    </td>
+
+                                                    <td className="p-3 pr-2 text-center">
+                                                        <button onClick={(e) => togglePopup(professor.time, e)}
+                                                            className="relative text-secondary-dark bg-light-dark hover:text-primary
+                                                                flex items-center h-[25px] w-[25px] text-base font-medium leading-normal
+                                                                text-center align-middle cursor-pointer rounded-2xl transition-colors
+                                                                duration-200 ease-in-out shadow-none border-0 justify-center m-auto">
+                                                            <span className="flex items-center justify-center pl-0 m-0 leading-none shrink-0 ">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                                    strokeWidth="1.5" stroke="currentColor" className="w-4 h-4 ">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                                                </svg>
+                                                            </span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </td>
                         </tr>
                     )}
