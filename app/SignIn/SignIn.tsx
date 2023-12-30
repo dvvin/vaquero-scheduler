@@ -69,7 +69,7 @@ const SignIn: React.FC = () => {
                                     </button>
                                 </div>
 
-                                <p className="text-black mt-1 font-sans">Don't have an account? <span className="cursor-pointer text-sm text-blue-600 font-sans"
+                                <p className="text-black mt-1 font-sans">Don&apos;t have an account? <span className="cursor-pointer text-sm text-blue-600 font-sans"
                                     onClick={toggleView}
                                 >
                                     Sign up now

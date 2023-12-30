@@ -1,4 +1,7 @@
 // schema.prisma
+// 'npx prisma db push' to update database
+// 'npx prisma generate' to update client
+// 'npx prisma studio' to open database GUI
 
 generator client {
     provider = "prisma-client-js"
@@ -30,11 +33,19 @@ model User {
     @@map(name: "users")
 }
 
-model Class {
-    id         String   @id @default(cuid())
+model Course {
+    id         String         @id @default(cuid())
+    number     String
     name       String
-    professor  String
-    difficulty String
-    style      String
-    times      String[]
+    professors Professor[]
+}
+
+model Professor {
+    id               String      @id @default(cuid())
+    name             String
+    difficultyRating Int
+    teachingStyle    String
+    campus           String[]
+    time             String[]
+    courses          Course[]
 }
