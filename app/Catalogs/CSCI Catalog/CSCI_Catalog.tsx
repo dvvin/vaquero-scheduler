@@ -6,6 +6,7 @@ interface ProfessorInfo {
     difficultyRating: number;
     teachingStyle: string;
     campus: string[];
+    day: string[];
     time: string[];
 }
 
@@ -35,7 +36,7 @@ const CSCI_Catalog: React.FC = () => {
     return (
         <>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/loopple-public-assets@main/riva-dashboard-tailwind/riva-dashboard.css" />
-            <div className="flex flex-wrap -mx-3 mb-5">
+            <div className="flex flex-wrap">
                 <div className="w-3/4  mb-6 pt-40 mx-auto">
                     <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
                         <div className="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">

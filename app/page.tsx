@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <main className="bg-gray-100 min-h-screen">
       <header className="w-full text-gray-700 bg-white border-t border-gray-100 shadow-sm body-font">
-        {/* <Navbar /> */}
+        <Navbar />
       </header>
 
       {/* <UserComponent /> */}

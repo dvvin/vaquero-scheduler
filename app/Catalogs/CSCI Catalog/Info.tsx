@@ -5,6 +5,7 @@ interface ProfessorInfo {
     difficultyRating: number;
     teachingStyle: string;
     campus: string[];
+    day: string[];
     time: string[];
 }
 
@@ -88,8 +89,9 @@ const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ courses }) => {
                         <td className="p-3 text-start">
                             {course.number}
                         </td>
-                        <td className="p-3 pl-0" onClick={() => toggleCourseDetails(course.number)}>
-                            <a className="font-semibold cursor-pointer text-lg/normal text-secondary-inverse hover:text-primary">
+                        <td className="p-3 pl-0">
+                            <a className="font-semibold cursor-pointer text-lg/normal text-secondary-inverse hover:text-primary"
+                                onClick={() => toggleCourseDetails(course.number)}>
                                 {course.name}
                             </a>
                         </td>
@@ -105,6 +107,7 @@ const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ courses }) => {
                                                 <th className="text-center p-3">DIFFICULTY</th>
                                                 <th className="text-center p-3">STYLE</th>
                                                 <th className="text-center p-3">CAMPUS</th>
+                                                <th className="text-center p-3">DAY</th>
                                                 <th className="text-center p-3">TIME</th>
                                             </tr>
                                         </thead>
@@ -145,6 +148,12 @@ const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ courses }) => {
                                                     <td className="p-3 pl-10 text-center">
                                                         <span className="font-semibold text-light-inverse text-md/normal">
                                                             {professor.campus.join(', ')}
+                                                        </span>
+                                                    </td>
+
+                                                    <td className="p-3 pl-10 text-center">
+                                                        <span className="font-semibold text-light-inverse text-md/normal">
+                                                            {professor.day.join(', ')}
                                                         </span>
                                                     </td>
 
