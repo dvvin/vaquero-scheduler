@@ -2,6 +2,7 @@
 import Navbar from "./Navbar/Navbar";
 import SignIn from "./SignIn/SignIn";
 import StudentInfo from "./StudentInfo/Info";
+import UserSelections from "./Catalogs/UserSelections";
 import CSCI_Catalog from './Catalogs/CSCI Catalog/CSCI_Catalog';
 import UserComponent from './Catalogs/CSCI Catalog/test';
 
@@ -14,9 +15,11 @@ export default function Home() {
       </header>
 
       {/* <UserComponent /> */}
+      {/* <UserSelections /> */}
       <CSCI_Catalog />
       {/* <SignIn />
        <StudentInfo /> */}
     </main>
   );
 }
+

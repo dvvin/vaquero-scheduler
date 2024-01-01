@@ -99,7 +99,7 @@ const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ courses }) => {
                     {expandedCourses.includes(course.number) && (
                         <tr className="border-b border-dashed last:border-b-0">
                             <td colSpan={7}>
-                                <div className="w-full overflow-x-hidden">
+                                <div className="w-full">
                                     <table className="min-w-full">
                                         <thead>
                                             <tr className="font-semibold text-[0.95rem] text-secondary-dark">
@@ -193,7 +193,7 @@ const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ courses }) => {
                 >
                     <div className="text-sm font-sans">
                         {visibleTimes.map((time, index) => (
-                            <div key={index} className="mb-1">
+                            <div key={index} className="">
                                 {time}
                             </div>
                         ))}
