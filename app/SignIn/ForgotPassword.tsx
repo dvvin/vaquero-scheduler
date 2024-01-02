@@ -9,7 +9,6 @@ const ForgotPassword: React.FC<{ onSignInClick: () => void }> = ({ onSignInClick
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement password reset logic
     };
 
     return (

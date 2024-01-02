@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 
-// Define the user type
 type PostType = {
     id: string;
     title: string;
     content: string | null;
     published: boolean;
     authorId: string;
-    author: UserType | null; // Assuming author can be null
+    author: UserType | null;
 };
 
 type UserType = {
@@ -16,7 +15,7 @@ type UserType = {
     email: string | null;
     createdAt: Date;
     updatedAt: Date;
-    posts: PostType[]; // Add this line
+    posts: PostType[];
 };
 
 
@@ -28,7 +27,7 @@ const UserComponent = () => {
             try {
                 const response = await fetch('/api/test');
                 const data = await response.json();
-                setUsers(data); // Assuming the data is an array of users
+                setUsers(data);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }

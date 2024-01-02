@@ -64,7 +64,7 @@ const SignIn: React.FC = () => {
 
                                 <div>
                                     <button className="mt-4 mb-3 w-full bg-orange-500 hover:bg-orange-400
-                                text-black py-2 rounded-md transition duration-100">
+                                      text-black py-2 rounded-md transition duration-100">
                                         Login now
                                     </button>
                                 </div>

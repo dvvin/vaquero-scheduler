@@ -50,3 +50,21 @@ model Professor {
     time             String[]
     courses          Course[]
 }
+
+model EECE_Course {
+    id         String      @id @default(cuid())
+    number     String
+    name       String
+    professors EECE_Professor[]
+}
+
+model EECE_Professor {
+    id               String   @id @default(cuid())
+    name             String
+    difficultyRating Int
+    teachingStyle    String
+    campus           String[]
+    day              String[]
+    time             String[]
+    courses          EECE_Course[]
+}
