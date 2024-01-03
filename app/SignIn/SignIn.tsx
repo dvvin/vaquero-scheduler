@@ -1,19 +1,45 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import vaqueroLogo from '../vaquero_trans.png';
 import Register from './Register';
-import ForgotPassword from './ForgotPassword'; // Import ForgotPassword component
+import ForgotPassword from './ForgotPassword';
 
-const SignIn: React.FC = () => {
+const SignInForm: React.FC = () => {
     const [isRegistering, setIsRegistering] = useState(false);
-    const [isResettingPassword, setIsResettingPassword] = useState(false); // New state for Forgot Password
+    const [isResettingPassword, setIsResettingPassword] = useState(false);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
-    const toggleView = () => {
-        setIsRegistering(!isRegistering);
-    };
+    const router = useRouter();
 
-    const toggleResetPassword = () => {
-        setIsResettingPassword(!isResettingPassword);
-    };
+    const toggleView = () => setIsRegistering(!isRegistering);
+    const toggleResetPassword = () => setIsResettingPassword(!isResettingPassword);
+
+    const handleSubmit = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        setErrorMessage('');
+
+        try {
+            const result = await signIn('credentials', {
+                redirect: false,
+                username,
+                password,
+            });
+
+            if (result && result.error) {
+                setErrorMessage(result.error === 'CredentialsSignin' ? 'Invalid username or password' : result.error);
+            }
+
+            else {
+                router.push('/Student');
+            }
+
+        } catch (error) {
+            // setErrorMessage('An error occurred. Please try again.');
+        }
+    }
 
     return (
         <div className="min-h-screen bg-no-repeat bg-cover"
@@ -32,23 +58,31 @@ const SignIn: React.FC = () => {
                         ) : isResettingPassword ? (
                             <ForgotPassword onSignInClick={toggleResetPassword} />
                         ) : (
-                            <form>
+                            <form onSubmit={handleSubmit} >
                                 <div>
                                     <span className="text-sm text-black font-sans">Welcome back</span>
                                     <h1 className="text-2xl text-black font-bold font-sans">Sign In to your account</h1>
                                 </div>
 
                                 <div className="mt-5">
-                                    <label className="block text-black text-md mb-2 font-sans" htmlFor="password">Password</label>
-                                    <input className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-                                        type="password" name="password" placeholder="password" />
+                                    <label className="block text-black text-md mb-2 font-sans" htmlFor="username">Username</label>
+                                    <input className="px-4 w-full border-2 py-2 rounded-md text-black text-sm outline-none"
+                                        type="text" name="username" placeholder="username" value={username} onChange={(e) => setUsername(e.target.value)} />
                                 </div>
 
                                 <div className="my-3">
+                                    <label className="block text-black text-md mb-2 font-sans" htmlFor="password">Password</label>
+                                    <input className="px-4 w-full border-2 py-2 rounded-md text-black text-sm outline-none"
+                                        type="password" name="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                </div>
+
+                                {errorMessage && <p className="text-red-500 text-xs italic">{errorMessage}</p>}
+
+                                {/* <div className="my-3">
                                     <label className="block text-black text-md mb-2 font-sans" htmlFor="email">Email</label>
                                     <input className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
                                         type="email" name="email" placeholder="email" />
-                                </div>
+                                </div> */}
 
                                 <div className="flex justify-between">
                                     <div className="flex items-center">
@@ -84,4 +118,4 @@ const SignIn: React.FC = () => {
     );
 };
 
-export default SignIn;
+export default SignInForm;
