@@ -1,5 +1,5 @@
 'use client';
-import Navbar from '../Navbar/Navbar';
+import Navbar from '../Navbar/page';
 import SignInForm from './SignIn';
 
 const UserLogin: React.FC = () => {

@@ -1,8 +1,48 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import vaqueroLogo from '../vaquero_trans.png';
+import { useEffect, useState } from 'react';
+import { signOut } from 'next-auth/react';
+
+interface SessionData {
+    user: {
+        username: string;
+    };
+    expires: string;
+}
 
 const Navbar: React.FC = () => {
+    const [session, setSession] = useState<SessionData | null>(null);
+
+    useEffect(() => {
+        const fetchSession = async () => {
+            const res = await fetch('/api/auth/session');
+
+            const data: SessionData = await res.json();
+
+            console.log("Fetched session data:", data);
+
+            if (data && data.user && data.user.username) {
+                setSession(data);
+            } else {
+                setSession(null);
+            }
+        };
+
+        fetchSession();
+    }, []);
+
+    const handleSignOut = async () => {
+        try {
+            await signOut();
+            setSession(null);
+            window.location.reload(); 
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
+    };
+
+
     return (
         <div style={{ zIndex: 6000 }} className="fixed top-0 bg-gray-100 font-sans w-full m-0 z-50">
             <div className="bg-white shadow">
@@ -44,19 +84,22 @@ const Navbar: React.FC = () => {
                         </div>
 
                         <div className="hidden sm:flex sm:items-center">
-                            {/* <Link legacyBehavior href="/SignIn">
-                                <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent
-                            hover:text-orange-600 hover:border hover:border-orange-600">
-                                    Sign in
-                                </a>
-                            </Link> */}
-                            <Link legacyBehavior href="/SignIn">
-                                <a className="ml-4 text-white bg-orange-600 text-sm font-semibold px-4 py-1 rounded-lg
-                                  hover:bg-orange-700">
-                                    Sign In
-                                </a>
-                            </Link>
-
+                            {session && session.user ? (
+                                <>
+                                    <a className="ml-4 text-white bg-orange-600 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-700">
+                                        Username: {session.user.username}
+                                    </a>
+                                    <button onClick={handleSignOut} className="ml-4 text-white bg-orange-600 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-700">
+                                        Sign Out
+                                    </button>
+                                </>
+                            ) : (
+                                <Link legacyBehavior href="/SignIn">
+                                    <a className="ml-4 text-white bg-orange-600 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-700">
+                                        Sign In
+                                    </a>
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </div>

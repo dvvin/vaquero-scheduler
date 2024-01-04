@@ -1,6 +1,6 @@
 'use client';
 import StudentInfo from "./StudentInfo";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../Navbar/page";
 
 const StudentPage: React.FC = () => {
     return (

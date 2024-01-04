@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import Navbar from '../Navbar/Navbar';
+import Navbar from '../Navbar/page';
 import UserSelections from './UserSelections';
 import Catalog_2023_2024 from './CSCI Catalog/2023-2024/CSCI_2023-2024';
 import Catalog_2024_2025 from './CSCI Catalog/2023-2024/CSCI_2024-2025';

@@ -3,7 +3,6 @@ import prisma from "@/lib/prisma";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
-import { error } from "console";
 
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -21,7 +20,7 @@ export const authOptions: NextAuthOptions = {
                 username: { label: "Username", type: "username", placeholder: "username" },
                 password: { label: "Password", type: "password", placeholder: "password" }
             },
-            async authorize(credentials) {
+            async authorize(credentials: Record<"username" | "password", string> | undefined) {
                 if (!credentials?.username || !credentials?.password) return null;
 
                 const user = await prisma.login.findUnique({
@@ -36,13 +35,34 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Invalid username or password");
                 }
 
-
                 return {
                     id: `${user.id}`,
-                    username: user.username,
-                    password: user.password
-                }
+                    username: user.username!,
+                    password: user.password!
+                };
             }
         })
-    ]
+    ],
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                return {
+                    ...token,
+                    username: user.username,
+                }
+            }
+            return token
+        },
+
+        async session({ session, user, token }) {
+            return {
+                ...session,
+                user: {
+                    ...session.user,
+                    username: token.username,
+                    token: token
+                }
+            };
+        }
+    }
 };
