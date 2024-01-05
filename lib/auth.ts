@@ -17,27 +17,37 @@ export const authOptions: NextAuthOptions = {
         CredentialsProvider({
             name: 'Credentials',
             credentials: {
-                username: { label: "Username", type: "username", placeholder: "username" },
+                fullName: { label: "Full Name", type: "text", placeholder: "Your Full Name" },
+                classification: { label: "Classification", type: "text", placeholder: "Your Classification" },
+                email: { label: "Email", type: "email", placeholder: "Your Email" },
+                studentID: { label: "Student ID", type: "text", placeholder: "Your Student ID" },
                 password: { label: "Password", type: "password", placeholder: "password" }
             },
-            async authorize(credentials: Record<"username" | "password", string> | undefined) {
-                if (!credentials?.username || !credentials?.password) return null;
+            async authorize(credentials: Record<"email" | "password", string> | undefined) {
+                if (!credentials?.email || !credentials?.password)
+                    return null;
 
-                const user = await prisma.login.findUnique({
-                    where: { username: credentials.username }
+                const user = await prisma.studentInfo.findUnique({
+                    where: {
+                        email: credentials.email
+                    }
                 });
+
 
                 if (!user) return null;
 
                 const passwordMatch = credentials.password && user.password && await compare(credentials.password, user.password);
 
-                if (!passwordMatch || !user) {
-                    throw new Error("Invalid username or password");
+                if (!passwordMatch) {
+                    throw new Error("Invalid email or password");
                 }
 
                 return {
-                    id: `${user.id}`,
-                    username: user.username!,
+                    id: `User ID: ${user.id}`,
+                    fullName: user.fullName!,
+                    classification: user.classification!,
+                    studentID: user.studentID!,
+                    email: user.email!,
                     password: user.password!
                 };
             }
@@ -48,10 +58,13 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 return {
                     ...token,
-                    username: user.username,
-                }
+                    fullName: user.fullName,
+                    studentID: user.studentID,
+                    email: user.email,
+                    classification: user.classification
+                };
             }
-            return token
+            return token;
         },
 
         async session({ session, user, token }) {
@@ -59,8 +72,10 @@ export const authOptions: NextAuthOptions = {
                 ...session,
                 user: {
                     ...session.user,
-                    username: token.username,
-                    token: token
+                    fullName: token.fullName,
+                    studentID: token.studentID,
+                    email: token.email,
+                    classification: token.classification
                 }
             };
         }

@@ -6,7 +6,8 @@ import { signOut } from 'next-auth/react';
 
 interface SessionData {
     user: {
-        username: string;
+        fullName: string;
+        email: string;
     };
     expires: string;
 }
@@ -22,7 +23,7 @@ const Navbar: React.FC = () => {
 
             console.log("Fetched session data:", data);
 
-            if (data && data.user && data.user.username) {
+            if (data && data.user && data.user.email) {
                 setSession(data);
             } else {
                 setSession(null);
@@ -36,12 +37,11 @@ const Navbar: React.FC = () => {
         try {
             await signOut();
             setSession(null);
-            window.location.reload(); 
+            window.location.reload();
         } catch (error) {
             console.error('Error signing out:', error);
         }
     };
-
 
     return (
         <div style={{ zIndex: 6000 }} className="fixed top-0 bg-gray-100 font-sans w-full m-0 z-50">
@@ -87,7 +87,7 @@ const Navbar: React.FC = () => {
                             {session && session.user ? (
                                 <>
                                     <a className="ml-4 text-white bg-orange-600 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-700">
-                                        Username: {session.user.username}
+                                        Email: {session.user.email}
                                     </a>
                                     <button onClick={handleSignOut} className="ml-4 text-white bg-orange-600 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-700">
                                         Sign Out

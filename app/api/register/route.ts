@@ -5,15 +5,9 @@ import { hash } from 'bcrypt';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { email, username, password } = body;
+        const { email, fullName, studentID, password, classification } = body;
 
         // Validation checks
-        if (username.length < 3) {
-            return new NextResponse(JSON.stringify({
-                error: 'Username must be at least 3 characters'
-            }), { status: 400 });
-        }
-
         if (!email.includes('.') || email.split('.').pop().length < 2) {
             return new NextResponse(JSON.stringify({
                 error: 'Invalid email format'
@@ -35,8 +29,10 @@ export async function POST(request: Request) {
         }
 
         // check if email exists
-        const existingEmail = await prisma.login.findUnique({
-            where: { email: email }
+        const existingEmail = await prisma.studentInfo.findUnique({
+            where: {
+                email: email
+            }
         });
 
         if (existingEmail) {
@@ -45,24 +41,28 @@ export async function POST(request: Request) {
             }), { status: 400 });
         }
 
-        // check if username exists
-        const existingUsername = await prisma.login.findUnique({
-            where: { username: username }
+        // Check if studentID exists
+        const existingStudentID = await prisma.studentInfo.findUnique({
+            where: {
+                studentID: studentID
+            }
         });
 
-        if (existingUsername) {
+        if (existingStudentID) {
             return new NextResponse(JSON.stringify({
-                error: 'Username already exists'
+                error: 'Student ID already exists'
             }), { status: 400 });
         }
 
         const hashedPassword = await hash(password, 10);
 
-        const newUser = await prisma.login.create({
+        const newUser = await prisma.studentInfo.create({
             data: {
                 email: email,
-                username: username,
-                password: hashedPassword
+                fullName: fullName,
+                studentID: studentID,
+                password: hashedPassword,
+                classification: classification // Save classification
             }
         });
 
@@ -71,10 +71,12 @@ export async function POST(request: Request) {
         return NextResponse.json({
             user: rest,
             message: 'User created successfully'
-        }, { status: 201 });
+        },
+            { status: 201 });
     } catch (error) {
         return NextResponse.json({
             message: 'Something went wrong'
-        }, { status: 500 });
+        },
+            { status: 500 });
     }
 }

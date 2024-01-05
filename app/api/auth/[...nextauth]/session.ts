@@ -9,8 +9,11 @@ export default async function sessionHandler(
     const session = await getServerSession(req, res, authOptions);
 
     if (session && session.user) {
-        return res.status(200).json({ username: session.user.username });
+        return res.status(200).json({
+            fullName: session.user.fullName,
+            studentID: session.user.studentID,
+            email: session.user.email,
+            classification: session.user.classification
+        });
     }
-
-
 }

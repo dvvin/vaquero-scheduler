@@ -1,16 +1,44 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { useEffect } from 'react';
 import vaqueroLogo from '../vaquero_trans.png';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword';
 
+interface SessionData {
+    user: {
+        fullName: string;
+        email: string;
+    };
+    expires: string;
+}
+
 const SignInForm: React.FC = () => {
     const [isRegistering, setIsRegistering] = useState(false);
     const [isResettingPassword, setIsResettingPassword] = useState(false);
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+
+    const [session, setSession] = useState<SessionData | null>(null);
+
+    useEffect(() => {
+        const fetchSession = async () => {
+            const res = await fetch('/api/auth/session');
+
+            const data: SessionData = await res.json();
+
+            if (data && data.user && data.user.email) {
+                setSession(data);
+                router.push('/');
+            } else {
+                setSession(null);
+            }
+        };
+
+        fetchSession();
+    }, []);
 
     const router = useRouter();
 
@@ -24,22 +52,19 @@ const SignInForm: React.FC = () => {
         try {
             const result = await signIn('credentials', {
                 redirect: false,
-                username,
+                email,
                 password,
             });
 
             if (result && result.error) {
-                setErrorMessage(result.error === 'CredentialsSignin' ? 'Invalid username or password' : result.error);
-            }
-
-            else {
+                setErrorMessage(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error);
+            } else {
                 router.push('/Student');
             }
-
         } catch (error) {
-            // setErrorMessage('An error occurred. Please try again.');
+            setErrorMessage('An error occurred. Please try again.');
         }
-    }
+    };
 
     return (
         <div className="min-h-screen bg-no-repeat bg-cover"
@@ -65,9 +90,9 @@ const SignInForm: React.FC = () => {
                                 </div>
 
                                 <div className="mt-5">
-                                    <label className="block text-black text-md mb-2 font-sans" htmlFor="username">Username</label>
+                                    <label className="block text-black text-md mb-2 font-sans" htmlFor="username">Email</label>
                                     <input className="px-4 w-full border-2 py-2 rounded-md text-black text-sm outline-none"
-                                        type="text" name="username" placeholder="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                                        type="text" name="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                                 </div>
 
                                 <div className="my-3">
@@ -77,12 +102,6 @@ const SignInForm: React.FC = () => {
                                 </div>
 
                                 {errorMessage && <p className="text-red-500 text-xs italic">{errorMessage}</p>}
-
-                                {/* <div className="my-3">
-                                    <label className="block text-black text-md mb-2 font-sans" htmlFor="email">Email</label>
-                                    <input className="px-4 w-full border-2 py-2 rounded-md text-sm outline-none"
-                                        type="email" name="email" placeholder="email" />
-                                </div> */}
 
                                 <div className="flex justify-between">
                                     <div className="flex items-center">
@@ -94,7 +113,6 @@ const SignInForm: React.FC = () => {
                                     >
                                         Forgot password?</span>
                                 </div>
-
 
                                 <div>
                                     <button className="mt-4 mb-3 w-full bg-orange-500 hover:bg-orange-400
