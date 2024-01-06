@@ -1,4 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+interface SessionData {
+    user: {
+        fullName: string;
+        email: string;
+        id: string;
+        studentID: string;
+    };
+    expires: string;
+}
 
 const GenerateSchedule: React.FC = () => {
     const [campusDropdown, setCampusDropdown] = useState(false);
@@ -15,6 +25,25 @@ const GenerateSchedule: React.FC = () => {
     const classTimeOptions = ["Morning", "Afternoon", "Both"];
     const difficultyOptions = ["Low", "Moderate", "High", "Any"];
     const styleOptions = ["Free", "Strict", "Mixed", "Any"];
+
+    const [session, setSession] = useState<SessionData | null>(null);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    useEffect(() => {
+        const fetchSession = async () => {
+            const res = await fetch('/api/auth/session');
+
+            const data: SessionData = await res.json();
+
+            if (data && data.user && data.user.email) {
+                setSession(data);
+            } else {
+                setSession(null);
+            }
+        };
+
+        fetchSession();
+    }, []);
 
     const toggleCampusSelect = () => {
         setCampusDropdown(!campusDropdown);
@@ -88,9 +117,42 @@ const GenerateSchedule: React.FC = () => {
         setStyleDropdown(false);
     }
 
-    const handleGenerateSchedule = () => {
-        
-    }
+    const handleGenerateSchedule = async () => {
+        if (!session) {
+            setErrorMessage('You must be signed in to generate a schedule.');
+            return;
+        }
+
+        const selectedOptions = {
+            campus: selectedCampus,
+            time: selectedClassTime,
+            difficultyRating: selectedDifficulty,
+            teachingStyle: selectedStyle,
+            studentInfo:
+            {
+                fullName: session?.user.fullName,
+                email: session?.user.email,
+                id: session?.user.id,
+                studentID: session?.user.studentID
+            }
+        };
+
+        try {
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(selectedOptions),
+            });
+
+            const data = await response.json();
+            console.log('Schedule Generated:', data);
+            console.log(session);
+        } catch (error) {
+            console.error('Error generating schedule:', error);
+        }
+    };
 
     return (
         <div style={{ zIndex: 5000 }} className="absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">
@@ -192,24 +254,20 @@ const GenerateSchedule: React.FC = () => {
                         )}
                     </div>
                 )}
-
-
             </div>
             {selectedStyle && (
-                    <div className="flex items-center justify-center pt-10">
-                        <div className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-100 bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <button
-                                type="button"
-                                className=""
-                                onClick={() => handleGenerateSchedule()}
-                            >
-                                Generate Schedule
-                            </button>
-                        </div>
+                <div className="flex items-center justify-center pt-10">
+                    <div onClick={() => handleGenerateSchedule()} className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-100 bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button type="button" className="">Generate Schedule</button>
                     </div>
-                )}
+                </div>
+            )}
+            {errorMessage && (
+                <div className="text-center my-4">
+                    <p className="text-red-500">{errorMessage}</p>
+                </div>
+            )}
         </div >
-
     );
 };
 
