@@ -1,19 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import CampusDropdown from './Dropdowns/CampusDropdown';
-import ClassTimeDropdown from './Dropdowns/ClassTimeDropdown';
-import DifficultyDropdown from './Dropdowns/DifficultyDropdown';
-import StyleDropdown from './Dropdowns/StyleDropdown';
+import Dropdown from './Dropdowns';
 import GetSessionData from './GetSessionData';
 import GenerateButton from './GenerateButton';
-import CourseList from './CourseList/CourseList';
-import { courses } from './CourseList/courseData';
+import CourseList from './CourseList';
 
 const GenerateSchedule: React.FC = () => {
-    const [campusDropdown, setCampusDropdown] = useState(false);
-    const [classTimeDropdown, setClassTimeDropdown] = useState(false);
-    const [difficultyDropdown, setDifficultyDropdown] = useState(false);
-    const [styleDropdown, setStyleDropdown] = useState(false);
-
     const [selectedCampus, setSelectedCampus] = useState<string | null>(null);
     const [selectedClassTime, setSelectedClassTime] = useState<string | null>(null);
     const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
@@ -88,57 +79,12 @@ const GenerateSchedule: React.FC = () => {
     return (
         <>
             <div style={{ zIndex: 5000 }} className="absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">
-                <div className="relative group flex">
-                    <CampusDropdown
-                        selectedCampus={selectedCampus}
-                        setSelectedCampus={setSelectedCampus}
-                        classTimeDropdown={classTimeDropdown}
-                        setClassTimeDropdown={setClassTimeDropdown}
-                        difficultyDropdown={difficultyDropdown}
-                        setDifficultyDropdown={setDifficultyDropdown}
-                        styleDropdown={styleDropdown}
-                        setStyleDropdown={setStyleDropdown}
-                    />
-
-                    {selectedCampus && (
-                        <ClassTimeDropdown
-                            selectedClassTime={selectedClassTime}
-                            setSelectedClassTime={setSelectedClassTime}
-                            campusDropdown={campusDropdown}
-                            setCampusDropdown={setCampusDropdown}
-                            difficultyDropdown={difficultyDropdown}
-                            setDifficultyDropdown={setDifficultyDropdown}
-                            styleDropdown={styleDropdown}
-                            setStyleDropdown={setStyleDropdown}
-                        />
-                    )}
-
-                    {selectedClassTime && (
-                        <DifficultyDropdown
-                            selectedDifficulty={selectedDifficulty}
-                            setSelectedDifficulty={setSelectedDifficulty}
-                            campusDropdown={campusDropdown}
-                            setCampusDropdown={setCampusDropdown}
-                            classTimeDropdown={classTimeDropdown}
-                            setClassTimeDropdown={setClassTimeDropdown}
-                            styleDropdown={styleDropdown}
-                            setStyleDropdown={setStyleDropdown}
-                        />
-                    )}
-
-                    {selectedDifficulty && (
-                        <StyleDropdown
-                            selectedStyle={selectedStyle}
-                            setSelectedStyle={setSelectedStyle}
-                            campusDropdown={campusDropdown}
-                            setCampusDropdown={setCampusDropdown}
-                            classTimeDropdown={classTimeDropdown}
-                            setClassTimeDropdown={setClassTimeDropdown}
-                            difficultyDropdown={difficultyDropdown}
-                            setDifficultyDropdown={setDifficultyDropdown}
-                        />
-                    )}
-                </div>
+                <Dropdown
+                    onCampusSelected={(campus) => setSelectedCampus(campus)}
+                    onClassTimeSelected={(classTime) => setSelectedClassTime(classTime)}
+                    onDifficultySelected={(difficulty) => setSelectedDifficulty(difficulty)}
+                    onStyleSelected={(style) => setSelectedStyle(style)}
+                />
 
                 {selectedStyle && (
                     <GenerateButton
@@ -154,7 +100,6 @@ const GenerateSchedule: React.FC = () => {
 
             {selectedStyle && (
                 <CourseList
-                    courses={courses}
                     expandedCourses={expandedCourses}
                     toggleCourseDetails={toggleCourseDetails}
                     handleSearchChange={handleSearchChange}

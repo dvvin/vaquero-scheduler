@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const GenerateButton = ({ session, selectedCampus, selectedClassTime, selectedDifficulty, selectedStyle }: {
-    session: any, selectedCampus: any, selectedClassTime: any, selectedDifficulty: any, selectedStyle: any
+const GenerateButton = ({ session, selectedCampus, selectedClassTime, selectedDifficulty, selectedStyle,  }: {
+    session: any,
+    selectedCampus: string | null,
+    selectedClassTime: string | null,
+    selectedDifficulty: string | null,
+    selectedStyle: string | null,
 }) => {
-
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleGenerateSchedule = async () => {

@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 type Course = {
     id: string;
     number: string;
@@ -16,176 +18,116 @@ type Professor = {
     courses: Course[];
 };
 
-const jsonData = `
-[
-    {
-        "id":"clqqkaawp000010felbymt1jm",
-        "number":"1101",
-        "name":"Introduction to Computer Science",
-        "professors":[
-            {
-                "id":"clqqkcmmo000210fencutghcf",
-                "name":"Charlie Ticer",
-                "difficultyRating":9,
-                "teachingStyle":"Free",
-                "campus":["Brownsville"],
-                "day":["M/W"],
-                "time":["9:00 A.M.","1:00 P.M."],
-                "courses":[
-                    {
-                        "id":"clqqkaawp000010felbymt1jm",
-                        "number":"1101",
-                        "name":"Introduction to Computer Science"
-                    }
-                ]
-            },
-            {
-                "id":"clqqkdvqt000310feqmznl458",
-                "name":"Robert Schweller",
-                "difficultyRating":3,
-                "teachingStyle":"Mixed",
-                "campus":["Edinburg"],
-                "day":["M/W"],
-                "time":["10:00 A.M.", "4:00 P.M."],
-                "courses":[
-                    {
-                        "id":"clqqkaawp000010felbymt1jm",
-                        "number":"1101",
-                        "name":"Introduction to Computer Science"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "id":"clqqkauuo000110fe01yp708s",
-        "number":"1470",
-        "name":"Computer Science I",
-        "professors":[
-            {
-                "id":"clqqkfi6h000410feljx3uukt",
-                "name":"Charlie Ticer",
-                "difficultyRating":5,
-                "teachingStyle":"Strict",
-                "campus":["Edinburg"],
-                "day":["T/TR"],
-                "time":["12:00 P.M.","2:00 P.M."],
-                "courses":[
-                    {
-                        "id":"clqqkauuo000110fe01yp708s",
-                        "number":"1470",
-                        "name":"Computer Science I"
-                    }
-                ]
-            },
-            {
-                "id":"clqqkhiof000510febq4xdhfl",
-                "name":"Robert Schweller",
-                "difficultyRating":8,
-                "teachingStyle":"Free",
-                "campus":["Brownsville"],
-                "day":["T/TR"],
-                "time":["1:00 P.M.","3:00 P.M."],
-                "courses":[
-                    {
-                        "id":"clqqkauuo000110fe01yp708s",
-                        "number":"1470",
-                        "name":"Computer Science I"
-                    }
-                ]
-            }
-        ]
+const FilterButton = () => {
+    function getDifficultyRating(rating: number): string {
+        if (rating <= 4) {
+            return "Low";
+        } else if (rating <= 7) {
+            return "Moderate";
+        } else if (rating >= 8) {
+            return "High";
+        } else {
+            return "Any"; // Default case
+        }
     }
-]`;
 
-function getDifficultyRating(rating: number): string {
-    if (rating <= 4) {
-        return "Low";
-    } else if (rating <= 7) {
-        return "Moderate";
-    } else {
-        return "High";
+    function getTime(time: string): string {
+        if (time.includes("A.M.")) {
+            return "Morning";
+        } else if (time.includes("P.M.")) {
+            return "Afternoon";
+        } else {
+            return "Any"; // Default case
+        }
     }
-}
 
-function getTime(time: string): string {
-    if (time.includes("A.M.")) {
-        return "Morning";
-    } else if (time.includes("P.M.")) {
-        return "Afternoon";
-    } else {
-        return "Any";
+    function getStyle(style: string): string {
+        if (style === "Strict") {
+            return "Strict";
+        } else if (style === "Free") {
+            return "Free";
+        } else if (style === "Mixed") {
+            return "Mixed";
+        } else {
+            return "Any";
+        }
     }
-}
 
-function getStyle(style: string): string {
-    if (style === "Strict") {
-        return "Strict";
-    } else if (style === "Free") {
-        return "Free";
-    } else {
-        return "Mixed";
-    }
-}
+    function filterCourses(courses: Course[], rating: string, style: string, campus: string[], timePref: string[]): [Course[], string | null] {
+        let conflictWarning: string | null = null;
 
-function filterCourses(courses: Course[], rating: string, style: string, campus: string[], timePref: string[]): [Course[], string | null] {
-    let conflictWarning: string | null = null;
+        const filteredCourses = courses.map(course => {
+            let timeDayMap = new Map<string, string[]>();
 
-    const filteredCourses = courses.map(course => {
-        let timeDayMap = new Map<string, string[]>(); // Map to track day and time for each course
+            const filteredProfessors = course.professors.map(professor => {
+                const isRatingMatch = rating === "Any" || getDifficultyRating(professor.difficultyRating) === rating;
+                const isStyleMatch = style === "Any" || professor.teachingStyle === style;
+                const isCampusMatch = campus.length === 0 || campus.includes(professor.campus[0]);
 
-        const filteredProfessors = course.professors.map(professor => {
-            const isRatingMatch = getDifficultyRating(professor.difficultyRating) === rating;
-            const isStyleMatch = professor.teachingStyle === style;
-            const isCampusMatch = campus.length === 0 || campus.includes(professor.campus[0]);
+                let filteredTimes = timePref.includes("Any")
+                    ? professor.time
+                    : professor.time.filter(t => timePref.includes(getTime(t)));
 
-            let filteredTimes = professor.time.filter(t => timePref.includes(getTime(t)) || timePref.includes("Any"));
 
-            // Check for time conflicts within the same course
-            filteredTimes.forEach(time => {
-                professor.day.forEach(day => {
-                    const timeDayKey = `${day}-${time}`;
-                    if (!timeDayMap.has(timeDayKey)) {
-                        timeDayMap.set(timeDayKey, []);
-                    }
-                    timeDayMap.get(timeDayKey)?.push(professor.name);
+                // Check for time conflicts within the same course
+                filteredTimes.forEach(time => {
+                    professor.day.forEach(day => {
+                        const timeDayKey = `${day}-${time}`;
+                        if (!timeDayMap.has(timeDayKey)) {
+                            timeDayMap.set(timeDayKey, []);
+                        }
+                        timeDayMap.get(timeDayKey)?.push(professor.name);
+                    });
                 });
+
+                if (isRatingMatch && isStyleMatch && isCampusMatch && filteredTimes.length > 0) {
+                    return { ...professor, time: filteredTimes };
+                }
+                return null;
+            }).filter(p => p !== null);
+
+            // Check for conflicts after processing all professors in a course
+            timeDayMap.forEach((professors, timeDayKey) => {
+                if (professors.length > 1) {
+                    conflictWarning = `Warning: Conflicting class times for ${professors.join(" and ")} on ${timeDayKey.replace('-', ' at ')}.`;
+                }
             });
 
-            if (isRatingMatch && isStyleMatch && isCampusMatch && filteredTimes.length > 0) {
-                return { ...professor, time: filteredTimes };
+            if (filteredProfessors.length > 0) {
+                return { ...course, professors: filteredProfessors };
             }
             return null;
-        }).filter(p => p !== null); // Remove null entries
+        }).filter(course => course !== null); // Filter out null courses
 
-        // Check for conflicts after processing all professors in a course
-        timeDayMap.forEach((professors, timeDayKey) => {
-            if (professors.length > 1) {
-                conflictWarning = `Warning: Conflicting class times for ${professors.join(" and ")} on ${timeDayKey.replace('-', ' at ')}.`;
+        return [filteredCourses as Course[], conflictWarning];
+    }
+
+    const [courses, setCourses] = useState<Course[]>([]);
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const response = await fetch('/api/csci-catalog');
+                const data = await response.json();
+                setCourses(data);
+            } catch (error) {
+                console.error('Error fetching courses:', error);
             }
-        });
+        };
 
-        if (filteredProfessors.length > 0) {
-            return { ...course, professors: filteredProfessors };
+        fetchCourses();
+    }, []);
+
+    const handleFilter = () => {
+        const [filteredCourses, conflictWarning] = filterCourses(courses, "Any", "Any", ["Brownsville"], ["Any"]);
+        console.log(JSON.stringify(filteredCourses, null, 2));
+        if (conflictWarning) {
+            console.warn(conflictWarning);
         }
-        return null;
-    }).filter(course => course !== null); // Filter out null courses
+    };
 
-    return [filteredCourses as Course[], conflictWarning];
-}
-
-const courses: Course[] = JSON.parse(jsonData);
-const [filteredCourses, conflictWarning] = filterCourses(courses, "High", "Free", ["Brownsville"], ["Afternoon"]);
-
-console.log(JSON.stringify(filteredCourses, null, 2));
-if (conflictWarning) {
-    console.warn(conflictWarning);
-}
-
-const FilterButton = () => {
     return (
-        <div>
-            <button>Filter</button>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <button onClick={handleFilter}>Filter</button>
         </div>
     );
 }

@@ -1,7 +1,22 @@
-import { CourseInfo } from "./courseData";
+import React from "react";
+import { useEffect, useState } from "react";
+
+interface ProfessorInfo {
+    name: string;
+    difficultyRating: number;
+    teachingStyle: string;
+    campus: string[];
+    day: string[];
+    time: string[];
+}
+
+interface CourseInfo {
+    number: string;
+    name: string;
+    professors: ProfessorInfo[];
+}
 
 interface CourseListProps {
-    courses: CourseInfo[];
     toggleCourseDetails: (number: string) => void;
     searchQuery: string;
     handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -16,7 +31,6 @@ interface CourseListProps {
 }
 
 const CourseList: React.FC<CourseListProps> = ({
-    courses,
     toggleCourseDetails,
     searchQuery,
     handleSearchChange,
@@ -29,6 +43,21 @@ const CourseList: React.FC<CourseListProps> = ({
     togglePopup,
     popupWidth
 }) => {
+
+    const [courses, setCourses] = useState<CourseInfo[]>([]);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const response = await fetch('/api/csci-catalog');
+                const data = await response.json();
+                setCourses(data);
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+            }
+        };
+        fetchCourses();
+    }, []);
 
     const filteredCourses = courses.filter(course =>
         course.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -65,8 +94,8 @@ const CourseList: React.FC<CourseListProps> = ({
 
                                     <tbody>
                                         {filteredCourses.map(course => (
-                                            <>
-                                                <tr key={course.number} className="border-b border-dashed last:border-b-0">
+                                            <React.Fragment key={course.number}>
+                                                <tr className="border-b border-dashed last:border-b-0">
                                                     <td className="p-3 text-start">
                                                         {course.number}
                                                     </td>
@@ -160,14 +189,15 @@ const CourseList: React.FC<CourseListProps> = ({
                                                         </td>
                                                     </tr>
                                                 )}
-                                            </>
+                                            </React.Fragment>
+
                                         ))}
                                         {showPopup && (
                                             <div
                                                 ref={popupRef}
-                                                className="absolute border border-gray-300 bg-white p-2 shadow-lg z-10"
+                                                className="absolute w-24 border border-gray-300 bg-white p-2 shadow-lg z-10"
                                                 style={{
-                                                    width: popupWidth,
+                                                    // width: popupWidth,
                                                     visibility: isPositioned ? 'visible' : 'hidden',
                                                     top: `${popupPosition.top}px`,
                                                     left: `${popupPosition.left}px`

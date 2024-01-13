@@ -36,10 +36,12 @@ const UserSelections: React.FC<UserSelectionsProps> = ({ onYearSelected, onCatal
     };
 
     const handleYearSelectDropdown = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, year: string) => {
-        event.stopPropagation();
+        event.stopPropagation(); // Prevents the dropdown from closing when clicking on the dropdown menu
+
         setSelectedYear(year);
         onYearSelected(year);
         setyearDropdown(false);
+
         setSelectedCatalog(null);
         onCatalogSelected("");
         setcatalogDropdown(false);
