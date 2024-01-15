@@ -21,6 +21,23 @@ const GenerateSchedule: React.FC = () => {
     const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
+    const [isGenerated, setIsGenerated] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [scheduleExists, setScheduleExists] = useState(false);
+
+    const handleScheduleGenerated = () => {
+        setIsLoading(true);
+
+        setTimeout(() => {
+            setIsLoading(false);
+            setIsGenerated(true);
+        }, 0);
+    };
+
+    const onScheduleFetched = (doesExist: boolean) => {
+        setScheduleExists(doesExist);
+    };
+
     const handleOutsideClick = (event: MouseEvent) => {
         if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
             setShowPopup(false);
@@ -78,27 +95,35 @@ const GenerateSchedule: React.FC = () => {
 
     return (
         <>
-            <div style={{ zIndex: 5000 }} className="absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">
-                <Dropdown
-                    onCampusSelected={(campus) => setSelectedCampus(campus)}
-                    onClassTimeSelected={(classTime) => setSelectedClassTime(classTime)}
-                    onDifficultySelected={(difficulty) => setSelectedDifficulty(difficulty)}
-                    onStyleSelected={(style) => setSelectedStyle(style)}
-                />
 
-                {selectedStyle && (
-                    <GenerateButton
-                        session={session}
-                        selectedCampus={selectedCampus}
-                        selectedClassTime={selectedClassTime}
-                        selectedDifficulty={selectedDifficulty}
-                        selectedStyle={selectedStyle}
+            {!scheduleExists && !isLoading && !isGenerated && (
+                <div style={{ zIndex: 5000 }} className="absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">
+                    <Dropdown
+                        onCampusSelected={(campus) => setSelectedCampus(campus)}
+                        onClassTimeSelected={(classTime) => setSelectedClassTime(classTime)}
+                        onDifficultySelected={(difficulty) => setSelectedDifficulty(difficulty)}
+                        onStyleSelected={(style) => setSelectedStyle(style)}
                     />
-                )}
 
-            </div>
+                    {selectedStyle && (
+                        <GenerateButton
+                            session={session}
+                            selectedCampus={selectedCampus}
+                            selectedClassTime={selectedClassTime}
+                            selectedDifficulty={selectedDifficulty}
+                            selectedStyle={selectedStyle}
+                            onGenerate={handleScheduleGenerated}
+                        />
+                    )}
 
-            {selectedStyle && (
+                </div>
+            )}
+
+            {/* {isLoading && (
+                <div className="text-red-500 absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">Loading...</div>
+            )} */}
+
+            {isGenerated && !isLoading && (
                 <CourseList
                     expandedCourses={expandedCourses}
                     toggleCourseDetails={toggleCourseDetails}
@@ -111,6 +136,14 @@ const GenerateSchedule: React.FC = () => {
                     popupWidth={popupWidth}
                     isPositioned={isPositioned}
                     popupRef={popupRef}
+                    filterCriteria={{
+                        campus: selectedCampus || "",
+                        time: selectedClassTime || "",
+                        difficultyRating: selectedDifficulty || "",
+                        teachingStyle: selectedStyle || "",
+                    }}
+                    onScheduleFetched={onScheduleFetched}
+
                 />
             )}
         </>

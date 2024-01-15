@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-interface SessionData {
+export interface SessionData {
     user: {
         fullName: string;
         email: string;

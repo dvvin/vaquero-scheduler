@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 
-const GenerateButton = ({ session, selectedCampus, selectedClassTime, selectedDifficulty, selectedStyle,  }: {
+const GenerateButton = ({ session, selectedCampus, selectedClassTime, selectedDifficulty, selectedStyle, onGenerate  }: {
     session: any,
     selectedCampus: string | null,
     selectedClassTime: string | null,
     selectedDifficulty: string | null,
     selectedStyle: string | null,
+    onGenerate: () => void; // New prop for callback function
+
 }) => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleGenerateSchedule = async () => {
+        onGenerate();
         if (!session) {
             setErrorMessage('You must be signed in to generate a schedule.');
             return;
@@ -36,9 +39,9 @@ const GenerateButton = ({ session, selectedCampus, selectedClassTime, selectedDi
             });
 
             const data = await response.json();
+
             console.log('Schedule Generated:', data);
         } catch (error) {
-            console.error('Error generating schedule:', error);
             setErrorMessage('Error generating schedule');
         }
     };
