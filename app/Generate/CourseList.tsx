@@ -38,7 +38,6 @@ interface CourseListProps {
         difficultyRating: string; // 1-4: "Low" or 5-7: "Moderate" or 8-10: "High" or "Any"
         teachingStyle: string; // "Strict" or "Free" or "Mixed" or "Any"
     };
-    onScheduleFetched: (scheduleExists: boolean) => void;
 }
 
 const isMorning = (time: string) => time.endsWith("A.M.") || time.endsWith("A.M");
@@ -55,7 +54,6 @@ const CourseList: React.FC<CourseListProps> = ({
     popupPosition,
     visibleTimes,
     togglePopup,
-    onScheduleFetched,
     // popupWidth,
 }) => {
 
@@ -79,7 +77,6 @@ const CourseList: React.FC<CourseListProps> = ({
 
                 setCourses(courseData);
                 setGeneratedSchedule(scheduleData);
-                onScheduleFetched(scheduleData.length > 0);
 
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -276,7 +273,7 @@ const CourseList: React.FC<CourseListProps> = ({
                                 {showPopup && (
                                     <div
                                         ref={popupRef}
-                                        className="absolute w-24 border border-gray-300 bg-white p-2 shadow-lg z-10"
+                                        className="absolute w-24 border text-black border-gray-300 bg-white p-2 shadow-lg z-10"
                                         style={{
                                             // width: popupWidth,
                                             visibility: isPositioned ? 'visible' : 'hidden',

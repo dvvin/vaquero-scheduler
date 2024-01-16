@@ -57,11 +57,13 @@ const Navbar: React.FC = () => {
 
 
                         <div className="hidden sm:flex sm:items-center">
+                        <Link legacyBehavior href="/Generate">
                             <a className="
                             text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent
                             hover:text-orange-600 hover:border hover:border-orange-600">
                                 Generate
                             </a>
+                        </Link>
 
                             <Link legacyBehavior href="/Student">
                                 <a className="

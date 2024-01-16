@@ -10,6 +10,9 @@ const GenerateSchedule: React.FC = () => {
     const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
     const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
 
+    const [getScheduleData, setGetScheduleData] = useState<any[]>([]);
+    const [isScheduleGenerated, setIsScheduleGenerated] = useState(false);
+
     const session = GetSessionData();
 
     const [visibleTimes, setVisibleTimes] = useState<string[]>([]);
@@ -21,21 +24,36 @@ const GenerateSchedule: React.FC = () => {
     const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const [isGenerated, setIsGenerated] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [scheduleExists, setScheduleExists] = useState(false);
+    useEffect(() => {
+        const fetchGetScheduleData = async () => {
+            try {
+                const response = await fetch('/api/getSchedule');
+                const data = await response.json();
+                setGetScheduleData(data);
+            } catch (error) {
+                console.error('Error fetching getSchedule data:', error);
+            }
+        };
+        fetchGetScheduleData();
+    }, []);
 
-    const handleScheduleGenerated = () => {
-        setIsLoading(true);
-
-        setTimeout(() => {
-            setIsLoading(false);
-            setIsGenerated(true);
-        }, 0);
+    const isSessionDataValid = () => {
+        return getScheduleData.some(schedule =>
+            schedule.StudentInfo.email === session?.user.email &&
+            schedule.StudentInfo.studentID === session?.user.studentID
+        );
     };
 
-    const onScheduleFetched = (doesExist: boolean) => {
-        setScheduleExists(doesExist);
+    const onScheduleGenerated = () => {
+        setIsScheduleGenerated(true);
+    };
+
+    const shouldShowDropdownAndButton = () => {
+        return session && !isScheduleGenerated && !isSessionDataValid();
+    };
+
+    const shouldShowCourseList = () => {
+        return session && (isScheduleGenerated || isSessionDataValid());
     };
 
     const handleOutsideClick = (event: MouseEvent) => {
@@ -95,8 +113,7 @@ const GenerateSchedule: React.FC = () => {
 
     return (
         <>
-
-            {!scheduleExists && !isLoading && !isGenerated && (
+            {shouldShowDropdownAndButton() && (
                 <div style={{ zIndex: 5000 }} className="absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">
                     <Dropdown
                         onCampusSelected={(campus) => setSelectedCampus(campus)}
@@ -112,18 +129,13 @@ const GenerateSchedule: React.FC = () => {
                             selectedClassTime={selectedClassTime}
                             selectedDifficulty={selectedDifficulty}
                             selectedStyle={selectedStyle}
-                            onGenerate={handleScheduleGenerated}
+                            onScheduleGenerated={onScheduleGenerated}
                         />
                     )}
-
                 </div>
             )}
 
-            {/* {isLoading && (
-                <div className="text-red-500 absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">Loading...</div>
-            )} */}
-
-            {isGenerated && !isLoading && (
+            {shouldShowCourseList() && (
                 <CourseList
                     expandedCourses={expandedCourses}
                     toggleCourseDetails={toggleCourseDetails}
@@ -142,8 +154,6 @@ const GenerateSchedule: React.FC = () => {
                         difficultyRating: selectedDifficulty || "",
                         teachingStyle: selectedStyle || "",
                     }}
-                    onScheduleFetched={onScheduleFetched}
-
                 />
             )}
         </>
