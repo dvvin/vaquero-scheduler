@@ -24,7 +24,7 @@ const Catalog_2023_2024: React.FC = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await fetch('/api/csci-catalog');
+                const response = await fetch(process.env.NEXT_PUBLIC_FETCH_COURSES || '');
                 const data = await response.json();
                 setCourses(data);
             } catch (error) {

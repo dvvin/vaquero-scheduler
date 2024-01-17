@@ -34,7 +34,7 @@ export const useSessionData = (): SessionData | null => {
 
     useEffect(() => {
         const fetchSession = async () => {
-            const res = await fetch('/api/auth/session');
+            const res = await fetch(process.env.NEXT_PUBLIC_FETCH_SESSION || '');
             const data: SessionData = await res.json();
 
             if (data && data.user && data.user.email) {
@@ -56,7 +56,7 @@ export const useScheduleData = (): ScheduleData[] => {
     useEffect(() => {
         const fetchScheduleData = async () => {
             try {
-                const response = await fetch('/api/getSchedule');
+                const response = await fetch(process.env.NEXT_PUBLIC_FETCH_SCHEDULE || '');
                 const data: ScheduleData[] = await response.json();
                 setScheduleData(data);
             } catch (error) {
@@ -75,7 +75,7 @@ export const useCourseData = (): CourseData[] => {
     useEffect(() => {
         const fetchCourseData = async () => {
             try {
-                const response = await fetch('/api/csci-catalog');
+                const response = await fetch(process.env.NEXT_PUBLIC_FETCH_COURSES || '');
                 const data: CourseData[] = await response.json();
                 setCourseData(data);
             } catch (error) {

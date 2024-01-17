@@ -108,7 +108,7 @@ const CourseList: React.FC<CourseListProps> = ({
 
     return (
         <div className="flex flex-wrap">
-            <div className="w-3/4 pt-24 mx-auto">
+            <div className="w-3/4 pt-6 mx-auto">
                 <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
                     <div className="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
                         <div className="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent">

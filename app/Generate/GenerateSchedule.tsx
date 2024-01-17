@@ -3,6 +3,7 @@ import Dropdown from './Dropdowns';
 import { useSessionData, useScheduleData } from './GetSessionData';
 import GenerateButton from './GenerateButton';
 import CourseList from './CourseList';
+import NewScheduleButton from './NewScheduleButton';
 
 const GenerateSchedule: React.FC = () => {
     const [selectedCampus, setSelectedCampus] = useState<string | null>(null);
@@ -41,6 +42,18 @@ const GenerateSchedule: React.FC = () => {
     const shouldShowCourseList = useMemo(() => {
         return session && (isScheduleGenerated || isSessionDataValid());
     }, [session, isScheduleGenerated, isSessionDataValid]);
+
+    const resetScheduleGeneration = () => {
+        setIsScheduleGenerated(false);
+        setSelectedCampus(null);
+        setSelectedClassTime(null);
+        setSelectedDifficulty(null);
+        setSelectedStyle(null);
+    };
+
+    useEffect(() => {
+        resetScheduleGeneration();
+    }, []);
 
     const handleOutsideClick = useCallback((event: MouseEvent) => {
         if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
@@ -127,20 +140,27 @@ const GenerateSchedule: React.FC = () => {
             )}
 
             {shouldShowCourseList && (
-                <CourseList
-                    expandedCourses={expandedCourses}
-                    toggleCourseDetails={toggleCourseDetails}
-                    handleSearchChange={handleSearchChange}
-                    searchQuery={searchQuery}
-                    togglePopup={togglePopup}
-                    visibleTimes={visibleTimes}
-                    showPopup={showPopup}
-                    popupPosition={popupPosition}
-                    popupWidth={popupWidth}
-                    isPositioned={isPositioned}
-                    popupRef={popupRef}
-                    filterCriteria={filterCriteria}
-                />
+                <>
+                    <NewScheduleButton
+                        session={session}
+                        onNewScheduleClick={resetScheduleGeneration}
+                    />
+
+                    <CourseList
+                        expandedCourses={expandedCourses}
+                        toggleCourseDetails={toggleCourseDetails}
+                        handleSearchChange={handleSearchChange}
+                        searchQuery={searchQuery}
+                        togglePopup={togglePopup}
+                        visibleTimes={visibleTimes}
+                        showPopup={showPopup}
+                        popupPosition={popupPosition}
+                        popupWidth={popupWidth}
+                        isPositioned={isPositioned}
+                        popupRef={popupRef}
+                        filterCriteria={filterCriteria}
+                    />
+                </>
             )}
         </>
     );
