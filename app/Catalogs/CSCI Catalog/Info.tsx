@@ -184,7 +184,7 @@ const CSCI_CatalogInfo: React.FC<CSCI_CatalogInfoProps> = ({ courses }) => {
             {showPopup && (
                 <div
                     ref={popupRef}
-                    className="absolute border border-gray-300 bg-white p-2 shadow-lg z-10"
+                    className="absolute w-24 border border-gray-300 bg-white p-2 shadow-lg z-10"
                     style={{
                         visibility: isPositioned ? 'visible' : 'hidden',
                         top: `${popupPosition.top}px`,

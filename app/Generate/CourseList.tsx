@@ -1,6 +1,6 @@
 import React from "react";
-import { useEffect, useState, useMemo } from "react";
-import GetSessionData, { SessionData } from "./GetSessionData";
+import { useMemo, useCallback } from "react";
+import { useSessionData, useCourseData, useScheduleData } from './GetSessionData';
 
 interface ProfessorInfo {
     name: string;
@@ -9,14 +9,6 @@ interface ProfessorInfo {
     campus: string[];
     day: string[];
     time: string[];
-}
-
-interface CourseInfo {
-    [x: string]: any;
-    difficultyRating: any;
-    number: string;
-    name: string;
-    professors: ProfessorInfo[];
 }
 
 interface CourseListProps {
@@ -57,36 +49,14 @@ const CourseList: React.FC<CourseListProps> = ({
     // popupWidth,
 }) => {
 
-    const [courses, setCourses] = useState<CourseInfo[]>([]);
-    const [generatedSchedule, setGeneratedSchedule] = useState<CourseInfo[]>([]);
-
-    const session: SessionData | null = GetSessionData();
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [courseRes, scheduleRes] = await Promise.all([
-                    fetch('/api/csci-catalog'),
-                    fetch('/api/getSchedule')
-                ]);
-
-                const [courseData, scheduleData] = await Promise.all([
-                    courseRes.json(),
-                    scheduleRes.json()
-                ]);
-
-                setCourses(courseData);
-                setGeneratedSchedule(scheduleData);
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-        fetchData();
-    }, []);
+    const session = useSessionData();
+    const courses = useCourseData();
+    const scheduleData = useScheduleData();
 
     const sessionData = session?.user;
-    const matchingSchedule = useMemo(() => generatedSchedule.find(schedule => schedule.StudentInfo?.email === sessionData?.email), [generatedSchedule, sessionData]);
+    const matchingSchedule = useMemo(() => {
+        return scheduleData.find(schedule => schedule.StudentInfo?.email === sessionData?.email);
+    }, [scheduleData, sessionData]);
 
     const selectedCampus = matchingSchedule?.campus || "";
     const selectedClassTime = matchingSchedule?.time || "";
@@ -109,13 +79,15 @@ const CourseList: React.FC<CourseListProps> = ({
         );
     };
 
+    const lowerCaseSearchQuery = useMemo(() => searchQuery.toLowerCase(), [searchQuery]);
+
     const filteredCourses = useMemo(() => {
         return courses.filter(course => {
-            const matchesSearch = course.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                course.name.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesSearch = course.number.toLowerCase().includes(lowerCaseSearchQuery) ||
+                course.name.toLowerCase().includes(lowerCaseSearchQuery);
 
-            const hasMatchingProfessor = course.professors.some(professor =>
-                (matchingSchedule?.campus === "Any" || professor.campus.includes(matchingSchedule?.campus))
+            const hasMatchingProfessor = course.professors.some((professor: ProfessorInfo) =>
+                (matchingSchedule?.campus === "Any" || professor.campus.includes(matchingSchedule?.campus || ""))
                 && (matchingSchedule?.difficultyRating === "Any" || getDifficultyRating(professor.difficultyRating) === matchingSchedule?.difficultyRating)
                 && (matchingSchedule?.teachingStyle === "Any" || professor.teachingStyle === matchingSchedule?.teachingStyle)
                 && timeMatches(professor.time, matchingSchedule?.time)
@@ -123,20 +95,20 @@ const CourseList: React.FC<CourseListProps> = ({
 
             return matchesSearch && hasMatchingProfessor;
         });
-    }, [courses, searchQuery, matchingSchedule]);
+    }, [courses, lowerCaseSearchQuery, matchingSchedule]);
 
-    const updatedTogglePopup = (times: string[], event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const updatedTogglePopup = useCallback((times: string[], event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const filteredTimes = times.filter(time =>
             selectedClassTime === "Any" ||
             (selectedClassTime === "Morning" && isMorning(time)) ||
             (selectedClassTime === "Afternoon" && isAfternoon(time))
         );
         togglePopup(filteredTimes, event);
-    };
+    }, [selectedClassTime, togglePopup]);
 
     return (
         <div className="flex flex-wrap">
-            <div className="w-3/4 pt-44 mx-auto">
+            <div className="w-3/4 pt-24 mx-auto">
                 <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
                     <div className="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
                         <div className="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent">
@@ -194,12 +166,12 @@ const CourseList: React.FC<CourseListProps> = ({
                                                                     </thead>
                                                                     <tbody>
                                                                         {course.professors
-                                                                            .filter(professor =>
+                                                                            .filter((professor: ProfessorInfo) =>
                                                                                 (selectedCampus === "Any" || professor.campus.includes(selectedCampus)) &&
                                                                                 (selectedDifficultyRating === "Any" || getDifficultyRating(professor.difficultyRating) === selectedDifficultyRating) &&
                                                                                 (selectedTeachingStyle === "Any" || professor.teachingStyle === selectedTeachingStyle)
                                                                             )
-                                                                            .map((professor, index) => (
+                                                                            .map((professor: ProfessorInfo, index: number) => (
                                                                                 <tr key={index}>
 
                                                                                     <td className="p-3 pr-10 text-center">

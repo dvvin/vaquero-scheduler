@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Dropdown from './Dropdowns';
-import GetSessionData from './GetSessionData';
+import { useSessionData, useScheduleData } from './GetSessionData';
 import GenerateButton from './GenerateButton';
 import CourseList from './CourseList';
 
@@ -10,10 +10,9 @@ const GenerateSchedule: React.FC = () => {
     const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
     const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
 
-    const [getScheduleData, setGetScheduleData] = useState<any[]>([]);
     const [isScheduleGenerated, setIsScheduleGenerated] = useState(false);
-
-    const session = GetSessionData();
+    const session = useSessionData();
+    const getScheduleData = useScheduleData();
 
     const [visibleTimes, setVisibleTimes] = useState<string[]>([]);
     const [showPopup, setShowPopup] = useState(false);
@@ -24,44 +23,30 @@ const GenerateSchedule: React.FC = () => {
     const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        const fetchGetScheduleData = async () => {
-            try {
-                const response = await fetch('/api/getSchedule');
-                const data = await response.json();
-                setGetScheduleData(data);
-            } catch (error) {
-                console.error('Error fetching getSchedule data:', error);
-            }
-        };
-        fetchGetScheduleData();
-    }, []);
-
-    const isSessionDataValid = () => {
+    const isSessionDataValid = useCallback(() => {
         return getScheduleData.some(schedule =>
             schedule.StudentInfo.email === session?.user.email &&
             schedule.StudentInfo.studentID === session?.user.studentID
         );
-    };
+    }, [getScheduleData, session?.user.email, session?.user.studentID]);
 
-    const onScheduleGenerated = () => {
+    const onScheduleGenerated = useCallback(() => {
         setIsScheduleGenerated(true);
-    };
+    }, []);
 
-    const shouldShowDropdownAndButton = () => {
+    const shouldShowDropdownAndButton = useMemo(() => {
         return session && !isScheduleGenerated && !isSessionDataValid();
-    };
+    }, [session, isScheduleGenerated, isSessionDataValid]);
 
-    const shouldShowCourseList = () => {
+    const shouldShowCourseList = useMemo(() => {
         return session && (isScheduleGenerated || isSessionDataValid());
-    };
+    }, [session, isScheduleGenerated, isSessionDataValid]);
 
-    const handleOutsideClick = (event: MouseEvent) => {
+    const handleOutsideClick = useCallback((event: MouseEvent) => {
         if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
             setShowPopup(false);
-            setIsPositioned(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         if (showPopup) {
@@ -90,14 +75,13 @@ const GenerateSchedule: React.FC = () => {
         }
     }, [showPopup, visibleTimes]);
 
-    const togglePopup = (times: string[], event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const togglePopup = useCallback((times: string[], event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
         setVisibleTimes(times);
         setShowPopup(!showPopup);
-        setIsPositioned(false);
-    };
+    }, [showPopup]);
 
-    const toggleCourseDetails = (number: string) => {
+    const toggleCourseDetails = useCallback((number: string) => {
         setExpandedCourses(prev => {
             if (prev.includes(number)) {
                 return prev.filter(cn => cn !== number);
@@ -105,15 +89,22 @@ const GenerateSchedule: React.FC = () => {
                 return [...prev, number];
             }
         });
-    };
+    }, []);
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
-    };
+    }, []);
+
+    const filterCriteria = useMemo(() => ({
+        campus: selectedCampus || "",
+        time: selectedClassTime || "",
+        difficultyRating: selectedDifficulty || "",
+        teachingStyle: selectedStyle || "",
+    }), [selectedCampus, selectedClassTime, selectedDifficulty, selectedStyle]);
 
     return (
         <>
-            {shouldShowDropdownAndButton() && (
+            {shouldShowDropdownAndButton && (
                 <div style={{ zIndex: 5000 }} className="absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">
                     <Dropdown
                         onCampusSelected={(campus) => setSelectedCampus(campus)}
@@ -135,7 +126,7 @@ const GenerateSchedule: React.FC = () => {
                 </div>
             )}
 
-            {shouldShowCourseList() && (
+            {shouldShowCourseList && (
                 <CourseList
                     expandedCourses={expandedCourses}
                     toggleCourseDetails={toggleCourseDetails}
@@ -148,12 +139,7 @@ const GenerateSchedule: React.FC = () => {
                     popupWidth={popupWidth}
                     isPositioned={isPositioned}
                     popupRef={popupRef}
-                    filterCriteria={{
-                        campus: selectedCampus || "",
-                        time: selectedClassTime || "",
-                        difficultyRating: selectedDifficulty || "",
-                        teachingStyle: selectedStyle || "",
-                    }}
+                    filterCriteria={filterCriteria}
                 />
             )}
         </>

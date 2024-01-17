@@ -10,7 +10,26 @@ export interface SessionData {
     expires: string;
 }
 
-const GetSessionData = (): SessionData | null => {
+export interface StudentInfo {
+    email: string;
+    studentID: string;
+}
+
+export interface ScheduleData {
+    StudentInfo: StudentInfo;
+    campus: string;
+    time: string;
+    difficultyRating: string;
+    teachingStyle: string;
+}
+
+export interface CourseData {
+    professors: any;
+    name: any;
+    number: any;
+}
+
+export const useSessionData = (): SessionData | null => {
     const [session, setSession] = useState<SessionData | null>(null);
 
     useEffect(() => {
@@ -31,4 +50,40 @@ const GetSessionData = (): SessionData | null => {
     return session;
 }
 
-export default GetSessionData;
+export const useScheduleData = (): ScheduleData[] => {
+    const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
+
+    useEffect(() => {
+        const fetchScheduleData = async () => {
+            try {
+                const response = await fetch('/api/getSchedule');
+                const data: ScheduleData[] = await response.json();
+                setScheduleData(data);
+            } catch (error) {
+                console.error('Error fetching schedule data:', error);
+            }
+        };
+        fetchScheduleData();
+    }, []);
+
+    return scheduleData;
+}
+
+export const useCourseData = (): CourseData[] => {
+    const [courseData, setCourseData] = useState<CourseData[]>([]);
+
+    useEffect(() => {
+        const fetchCourseData = async () => {
+            try {
+                const response = await fetch('/api/csci-catalog');
+                const data: CourseData[] = await response.json();
+                setCourseData(data);
+            } catch (error) {
+                console.error('Error fetching course data:', error);
+            }
+        };
+        fetchCourseData();
+    }, []);
+
+    return courseData;
+}
