@@ -51,9 +51,9 @@ const GenerateSchedule: React.FC = () => {
         setSelectedStyle(null);
     };
 
-    useEffect(() => {
-        resetScheduleGeneration();
-    }, []);
+    // useEffect(() => {
+    //     resetScheduleGeneration();
+    // }, []);
 
     const handleOutsideClick = useCallback((event: MouseEvent) => {
         if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
