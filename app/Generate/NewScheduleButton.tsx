@@ -13,7 +13,7 @@ const NewScheduleButton = ({ session, onNewScheduleClick }: {
         }
 
         try {
-            const response = await fetch('/api/newSchedule', {
+            const response = await fetch(process.env.NEXT_PUBLIC_FETCH_NEW_SCHEDULE || '', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ studentID: session?.user.studentID }),
