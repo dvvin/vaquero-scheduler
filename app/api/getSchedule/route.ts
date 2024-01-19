@@ -9,6 +9,10 @@ export async function GET(request: Request, response: NextResponse) {
     });
 
     return new NextResponse(JSON.stringify(schedule), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+        },
     });
 }
+

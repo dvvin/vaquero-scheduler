@@ -14,6 +14,9 @@ export async function GET(request: Request) {
     });
 
     return new NextResponse(JSON.stringify(courses), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache' 
+        },
     });
 }
