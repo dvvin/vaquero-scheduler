@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useGenerateSchedule } from './GetSessionData'; 
+import { useGenerateSchedule } from '../GetSessionData';
 
 const GenerateButton = ({ session, selectedCampus, selectedClassTime, selectedDifficulty, selectedStyle, onScheduleGenerated }: {
     session: any,

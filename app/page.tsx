@@ -1,5 +1,7 @@
 'use client';
+import StudentPage from "./Student/page";
 import GeneratePage from "./Generate/page";
+import UserLogin from "./SignIn/page";
 
 export default function Home() {
   return (

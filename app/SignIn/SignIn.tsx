@@ -1,18 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { useEffect } from 'react';
 import vaqueroLogo from '../vaquero_trans.png';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword';
-
-interface SessionData {
-    user: {
-        fullName: string;
-        email: string;
-    };
-    expires: string;
-}
+import { useSessionData } from '../GetSessionData';
 
 const SignInForm: React.FC = () => {
     const [isRegistering, setIsRegistering] = useState(false);
@@ -21,26 +13,14 @@ const SignInForm: React.FC = () => {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    const [session, setSession] = useState<SessionData | null>(null);
+    const session = useSessionData();
+    const router = useRouter();
 
     useEffect(() => {
-        const fetchSession = async () => {
-            const res = await fetch(process.env.NEXT_PUBLIC_FETCH_SESSION || '');
-
-            const data: SessionData = await res.json();
-
-            if (data && data.user && data.user.email) {
-                setSession(data);
-                router.push('/');
-            } else {
-                setSession(null);
-            }
-        };
-
-        fetchSession();
-    }, []);
-
-    const router = useRouter();
+        if (session && session.user && session.user.email) {
+            router.push('/');
+        }
+    }, [session, router]);
 
     const toggleView = () => setIsRegistering(!isRegistering);
     const toggleResetPassword = () => setIsResettingPassword(!isResettingPassword);

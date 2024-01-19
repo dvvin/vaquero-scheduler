@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useRegister } from '../Generate/GetSessionData';
+import { useRegister } from '../GetSessionData';
 
 const Register: React.FC<{ onSignInClick: () => void }> = ({ onSignInClick }) => {
     const [fullName, setFullName] = useState('');

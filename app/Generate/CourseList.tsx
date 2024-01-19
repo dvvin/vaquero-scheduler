@@ -1,6 +1,6 @@
 import React from "react";
 import { useMemo, useCallback } from "react";
-import { useSessionData, useCourseData, useScheduleData } from './GetSessionData';
+import { useSessionData, useCourseData, useScheduleData } from '../GetSessionData';
 
 interface ProfessorInfo {
     name: string;

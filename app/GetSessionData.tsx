@@ -6,6 +6,7 @@ export interface SessionData {
         email: string;
         id: string;
         studentID: string;
+        classification: string;
     };
     expires: string;
 }
@@ -126,4 +127,24 @@ export const useRegister = () => {
     };
 
     return register;
+};
+
+export const useDeleteSchedule = () => {
+    const deleteSchedule = async (studentID: string) => {
+        try {
+            const response = await fetch(process.env.NEXT_PUBLIC_FETCH_NEW_SCHEDULE || '', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ studentID }),
+            });
+
+            const data = await response.json();
+            console.log('Schedule Deleted:', data);
+            return data;
+        } catch (error) {
+            throw new Error('Error deleting schedule');
+        }
+    };
+
+    return deleteSchedule;
 };

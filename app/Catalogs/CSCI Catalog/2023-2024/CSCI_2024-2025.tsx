@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from '@/app/Navbar/Navbar';
 import CSCI_CatalogInfo from '../Info';
+import { useCourseData } from '@/app/GetSessionData';
 
 interface ProfessorInfo {
     name: string;
@@ -18,28 +19,14 @@ interface CourseInfo {
 }
 
 const Catalog_2024_2025: React.FC = () => {
-    const [courses, setCourses] = useState<CourseInfo[]>([]);
+    const courseData = useCourseData();
     const [searchQuery, setSearchQuery] = useState('');
-
-    useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-                const response = await fetch(process.env.NEXT_PUBLIC_FETCH_COURSES || '');
-                const data = await response.json();
-                setCourses(data);
-            } catch (error) {
-                console.error('Error fetching courses:', error);
-            }
-        };
-
-        fetchCourses();
-    }, []);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
     };
 
-    const filteredCourses = courses.filter(course =>
+    const filteredCourses = courseData.filter(course =>
         course.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
         course.name.toLowerCase().includes(searchQuery.toLowerCase())
     );

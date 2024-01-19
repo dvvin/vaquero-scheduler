@@ -1,42 +1,33 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import vaqueroLogo from '../vaquero_trans.png';
-import { useEffect, useState } from 'react';
 import { signOut } from 'next-auth/react';
-
-interface SessionData {
-    user: {
-        fullName: string;
-        email: string;
-    };
-    expires: string;
-}
+import { useSessionData } from '../GetSessionData';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const Navbar: React.FC = () => {
-    const [session, setSession] = useState<SessionData | null>(null);
+    const router = useRouter();
+    const session = useSessionData();
+    const [isLoading, setIsLoading] = useState(true);
+    console.log("Current session: ", session);
 
     useEffect(() => {
-        const fetchSession = async () => {
-            const res = await fetch(process.env.NEXT_PUBLIC_FETCH_SESSION || '');
+        if (!session && !isLoading) {
+            router.push('/SignIn');
+        } else if (session) {
+            setIsLoading(false);
+        }
+    }, [session, isLoading, router]);
 
-            const data: SessionData = await res.json();
-
-            console.log("Fetched session data:", data);
-
-            if (data && data.user && data.user.email) {
-                setSession(data);
-            } else {
-                setSession(null);
-            }
-        };
-
-        fetchSession();
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 150);
+        return () => clearTimeout(timer);
     }, []);
 
     const handleSignOut = async () => {
         try {
             await signOut();
-            setSession(null);
             window.location.reload();
         } catch (error) {
             console.error('Error signing out:', error);
@@ -57,13 +48,13 @@ const Navbar: React.FC = () => {
 
 
                         <div className="hidden sm:flex sm:items-center">
-                        <Link legacyBehavior href="/Generate">
-                            <a className="
+                            <Link legacyBehavior href="/Generate">
+                                <a className="
                             text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent
                             hover:text-orange-600 hover:border hover:border-orange-600">
-                                Generate
-                            </a>
-                        </Link>
+                                    Generate
+                                </a>
+                            </Link>
 
                             <Link legacyBehavior href="/Student">
                                 <a className="
@@ -78,11 +69,6 @@ const Navbar: React.FC = () => {
                                     Catalogs
                                 </a>
                             </Link>
-
-                            <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent
-                            hover:text-orange-600 hover:border hover:border-orange-600">
-                                About
-                            </a>
                         </div>
 
                         <div className="hidden sm:flex sm:items-center">

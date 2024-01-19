@@ -1,35 +1,7 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
-
-interface SessionData {
-    user: {
-        id: string;
-        fullName: string;
-        email: string;
-        studentID: string;
-        classification: string;
-    };
-    expires: string;
-}
+import { useSessionData } from '../GetSessionData';
 
 const StudentInfo: React.FC = () => {
-    const [session, setSession] = useState<SessionData | null>(null);
-
-    useEffect(() => {
-        const fetchSession = async () => {
-            const res = await fetch(process.env.NEXT_PUBLIC_FETCH_SESSION || '');
-
-            const data: SessionData = await res.json();
-
-            if (data && data.user && data.user.email) {
-                setSession(data);
-            } else {
-                setSession(null);
-            }
-        };
-
-        fetchSession();
-    }, []);
+    const session = useSessionData();
 
     return (
         <div className="min-h-screen flex items-center justify-center px-4 font-sans">

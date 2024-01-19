@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Dropdown from './Dropdowns';
-import { useSessionData, useScheduleData } from './GetSessionData';
+import { useSessionData, useScheduleData } from '../GetSessionData';
 import GenerateButton from './GenerateButton';
 import CourseList from './CourseList';
 import NewScheduleButton from './NewScheduleButton';

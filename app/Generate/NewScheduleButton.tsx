@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useDeleteSchedule } from '../GetSessionData'; // Import the new hook
 
 const NewScheduleButton = ({ session, onNewScheduleClick }: {
     session: any,
     onNewScheduleClick: () => void;
 }) => {
+
     const [errorMessage, setErrorMessage] = useState('');
+    const deleteSchedule = useDeleteSchedule();
 
     const handleDeleteSchedule = async () => {
         if (!session) {
@@ -13,15 +16,7 @@ const NewScheduleButton = ({ session, onNewScheduleClick }: {
         }
 
         try {
-            const response = await fetch(process.env.NEXT_PUBLIC_FETCH_NEW_SCHEDULE || '', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ studentID: session?.user.studentID }),
-            });
-
-            const data = await response.json();
-
-            console.log('Schedule Deleted:', data);
+            await deleteSchedule(session.user.studentID);
             onNewScheduleClick();
         } catch (error) {
             setErrorMessage('Error deleting schedule');
@@ -33,7 +28,9 @@ const NewScheduleButton = ({ session, onNewScheduleClick }: {
             <div className="flex items-center justify-center pt-28">
                 <button
                     onClick={handleDeleteSchedule}
-                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-100 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm
+                    font-medium rounded-md text-gray-100 bg-blue-600 hover:bg-blue-700 focus:outline-none
+                    focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                     New Schedule
                 </button>
