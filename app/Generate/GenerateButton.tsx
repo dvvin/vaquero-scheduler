@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useGenerateSchedule } from './GetSessionData'; 
 
 const GenerateButton = ({ session, selectedCampus, selectedClassTime, selectedDifficulty, selectedStyle, onScheduleGenerated }: {
     session: any,
@@ -10,6 +11,7 @@ const GenerateButton = ({ session, selectedCampus, selectedClassTime, selectedDi
 
 }) => {
     const [errorMessage, setErrorMessage] = useState('');
+    const generateSchedule = useGenerateSchedule();
 
     const handleGenerateSchedule = async () => {
         if (!session) {
@@ -31,14 +33,7 @@ const GenerateButton = ({ session, selectedCampus, selectedClassTime, selectedDi
         };
 
         try {
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(selectedOptions),
-            });
-
-            const data = await response.json();
-
+            const data = await generateSchedule(selectedOptions);
             console.log('Schedule Generated:', data);
             onScheduleGenerated();
         } catch (error) {

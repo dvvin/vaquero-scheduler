@@ -87,3 +87,43 @@ export const useCourseData = (): CourseData[] => {
 
     return courseData;
 }
+
+export const useGenerateSchedule = () => {
+    const generateSchedule = async (selectedOptions: any) => {
+        try {
+            const response = await fetch(process.env.NEXT_PUBLIC_GENERATE_SCHEDULE_API || '', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(selectedOptions),
+            });
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            throw new Error('Error generating schedule');
+        }
+    };
+
+    return generateSchedule;
+};
+
+export const useRegister = () => {
+    const register = async (userData: any) => {
+        try {
+            const response = await fetch(process.env.NEXT_PUBLIC_REGISTER_API || '', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            throw new Error('Error during registration');
+        }
+    };
+
+    return register;
+};

@@ -17,7 +17,7 @@ const StudentInfo: React.FC = () => {
 
     useEffect(() => {
         const fetchSession = async () => {
-            const res = await fetch('/api/auth/session');
+            const res = await fetch(process.env.NEXT_PUBLIC_FETCH_SESSION || '');
 
             const data: SessionData = await res.json();
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useRegister } from '../Generate/GetSessionData';
 
 const Register: React.FC<{ onSignInClick: () => void }> = ({ onSignInClick }) => {
     const [fullName, setFullName] = useState('');
@@ -29,6 +30,7 @@ const Register: React.FC<{ onSignInClick: () => void }> = ({ onSignInClick }) =>
     }
 
     const router = useRouter();
+    const register = useRegister();
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -41,15 +43,15 @@ const Register: React.FC<{ onSignInClick: () => void }> = ({ onSignInClick }) =>
         setError('');
 
         try {
-            const response = await fetch('/api/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, studentID, password, fullName, classification: selectedClassification }),
-            });
+            const userData = {
+                fullName,
+                email,
+                studentID,
+                password,
+                classification: selectedClassification,
+            };
 
-            const data = await response.json();
+            const data = await register(userData);
 
             if (data.error) {
                 setError(data.error);
