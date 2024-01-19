@@ -2,6 +2,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../lib/prisma';
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: Request) {
     const courses = await prisma.course.findMany({
         include: {
@@ -16,7 +18,7 @@ export async function GET(request: Request) {
     return new NextResponse(JSON.stringify(courses), {
         headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache' 
+            'Cache-Control': 'no-cache'
         },
     });
 }
