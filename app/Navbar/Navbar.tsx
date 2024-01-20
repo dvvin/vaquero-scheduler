@@ -1,30 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import vaqueroLogo from '../vaquero_trans.png';
+import vaqueroLogo from '../images/vaquero_trans.png';
 import { signOut } from 'next-auth/react';
 import { useSessionData } from '../GetSessionData';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 const Navbar: React.FC = () => {
-    const router = useRouter();
     const session = useSessionData();
-    const [isLoading, setIsLoading] = useState(true);
-    console.log("Current session: ", session);
-
-    useEffect(() => {
-        if (!session && !isLoading) {
-            router.push('/SignIn');
-        } else if (session) {
-            setIsLoading(false);
-        }
-    }, [session, isLoading, router]);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 150);
-        return () => clearTimeout(timer);
-    }, []);
-
     const handleSignOut = async () => {
         try {
             await signOut();
@@ -56,28 +37,34 @@ const Navbar: React.FC = () => {
                                 </a>
                             </Link>
 
-                            <Link legacyBehavior href="/Student">
-                                <a className="
-                                  text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent
-                                  hover:text-orange-600 hover:border hover:border-orange-600">
-                                    Student
-                                </a>
-                            </Link>
-
                             <Link legacyBehavior href="/Catalogs">
                                 <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
                                     Catalogs
                                 </a>
                             </Link>
+
+                            {session && session.user && (
+                                <Link legacyBehavior href="/Student">
+                                    <a className="
+                                  text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent
+                                  hover:text-orange-600 hover:border hover:border-orange-600">
+                                        Student
+                                    </a>
+                                </Link>
+                            )}
+
+                            <Link legacyBehavior href="/About">
+                                <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
+                                    About
+                                </a>
+                            </Link>
+
                         </div>
 
                         <div className="hidden sm:flex sm:items-center">
                             {session && session.user ? (
                                 <>
-                                    <a className="ml-4 text-white bg-orange-600 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-700">
-                                        Email: {session.user.email}
-                                    </a>
-                                    <button onClick={handleSignOut} className="ml-4 text-white bg-orange-600 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-700">
+                                    <button onClick={handleSignOut} className="ml-4 text-white bg-orange-500 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-600">
                                         Sign Out
                                     </button>
                                 </>

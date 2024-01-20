@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import vaqueroLogo from '../vaquero_trans.png';
+import vaqueroLogo from '../images/vaquero_trans.png';
 import Register from './Register';
 import ForgotPassword from './ForgotPassword';
 import { useSessionData } from '../GetSessionData';

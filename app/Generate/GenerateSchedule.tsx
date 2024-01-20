@@ -24,6 +24,8 @@ const GenerateSchedule: React.FC = () => {
     const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
+    const isUserSignedIn = session != null;
+
     const isSessionDataValid = useCallback(() => {
         return getScheduleData.some(schedule =>
             schedule.StudentInfo.email === session?.user.email &&
@@ -113,7 +115,13 @@ const GenerateSchedule: React.FC = () => {
 
     return (
         <>
-            {shouldShowDropdownAndButton && (
+            {!isUserSignedIn && (
+                <div style={{ zIndex: 5000 }} className="absolute text-red-400 pt-28 top-0 left-1/2 transform -translate-x-1/2">
+                    <p>You must be signed in to use the Scheduler</p>
+                </div>
+            )}
+
+            {isUserSignedIn && shouldShowDropdownAndButton && (
                 <div style={{ zIndex: 5000 }} className="absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">
                     <Dropdown
                         onCampusSelected={(campus) => setSelectedCampus(campus)}
@@ -135,7 +143,7 @@ const GenerateSchedule: React.FC = () => {
                 </div>
             )}
 
-            {shouldShowCourseList && (
+            {isUserSignedIn && shouldShowCourseList && (
                 <>
                     <NewScheduleButton
                         session={session}

@@ -32,6 +32,7 @@ export interface CourseData {
 
 export const useSessionData = (): SessionData | null => {
     const [session, setSession] = useState<SessionData | null>(null);
+    console.log(session);
 
     useEffect(() => {
         const fetchSession = async () => {
