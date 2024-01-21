@@ -98,9 +98,9 @@ const Homepage: React.FC = () => {
                                 >
                                     <div className="bg-gray-900 bg-opacity-50 flex items-center h-full">
                                         <div className="px-10 max-w-xl">
-                                            <h2 className="text-3xl text-orange-200 font-semibold">About</h2>
+                                            <h2 className="text-3xl text-orange-200 font-semibold">Schedules</h2>
                                             <p className="mt-2 text-xl text-gray-200">
-                                                Read about Vaquero Scheduler.
+                                                View your generated schedules.
                                             </p>
 
                                             <Link legacyBehavior href="/About">

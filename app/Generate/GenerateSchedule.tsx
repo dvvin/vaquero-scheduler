@@ -4,6 +4,7 @@ import { useSessionData, useScheduleData } from '../GetSessionData';
 import GenerateButton from './GenerateButton';
 import CourseList from './CourseList';
 import NewScheduleButton from './NewScheduleButton';
+import SaveScheduleButton from './SaveScheduleButton';
 
 const GenerateSchedule: React.FC = () => {
     const [selectedCampus, setSelectedCampus] = useState<string | null>(null);
@@ -14,6 +15,7 @@ const GenerateSchedule: React.FC = () => {
     const [isScheduleGenerated, setIsScheduleGenerated] = useState(false);
     const session = useSessionData();
     const getScheduleData = useScheduleData();
+    const [scheduleSaved, setScheduleSaved] = useState(false);
 
     const [visibleTimes, setVisibleTimes] = useState<string[]>([]);
     const [showPopup, setShowPopup] = useState(false);
@@ -35,15 +37,28 @@ const GenerateSchedule: React.FC = () => {
 
     const onScheduleGenerated = useCallback(() => {
         setIsScheduleGenerated(true);
+        setScheduleSaved(false); // Reset schedule saved state when a new schedule is generated
     }, []);
 
+    const onScheduleSaved = () => {
+        resetScheduleGeneration();
+        setScheduleSaved(true);
+        setIsScheduleGenerated(false); // Ensure that CourseList is hidden after saving the schedule
+    };
+
+    const courseListStyle = {
+        marginTop: scheduleSaved ? '4rem' : '0',
+    };
+
     const shouldShowDropdownAndButton = useMemo(() => {
-        return session && !isScheduleGenerated && !isSessionDataValid();
-    }, [session, isScheduleGenerated, isSessionDataValid]);
+        // Show dropdowns if a session exists and either a schedule is not yet generated or a schedule has been saved
+        return session && !isScheduleGenerated || scheduleSaved;
+    }, [session, isScheduleGenerated, scheduleSaved]);
 
     const shouldShowCourseList = useMemo(() => {
-        return session && (isScheduleGenerated || isSessionDataValid());
-    }, [session, isScheduleGenerated, isSessionDataValid]);
+        // Show CourseList only if a schedule has been generated and not yet saved
+        return session && isScheduleGenerated && !scheduleSaved;
+    }, [session, isScheduleGenerated, scheduleSaved]);
 
     const resetScheduleGeneration = () => {
         setIsScheduleGenerated(false);
@@ -148,24 +163,34 @@ const GenerateSchedule: React.FC = () => {
                     <NewScheduleButton
                         session={session}
                         onNewScheduleClick={resetScheduleGeneration}
+                        onScheduleSaved={onScheduleSaved}
                     />
 
-                    <CourseList
-                        expandedCourses={expandedCourses}
-                        toggleCourseDetails={toggleCourseDetails}
-                        handleSearchChange={handleSearchChange}
-                        searchQuery={searchQuery}
-                        togglePopup={togglePopup}
-                        visibleTimes={visibleTimes}
-                        showPopup={showPopup}
-                        popupPosition={popupPosition}
-                        popupWidth={popupWidth}
-                        isPositioned={isPositioned}
-                        popupRef={popupRef}
-                        filterCriteria={filterCriteria}
-                    />
+                    {scheduleSaved && (
+                        <div style={{ zIndex: 5000 }} className="absolute text-green-400 pt-48 top-0 left-1/2 transform -translate-x-1/2">
+                            Schedule saved successfully!
+                        </div>
+                    )}
+
+                    <div style={courseListStyle}>
+                        <CourseList
+                            expandedCourses={expandedCourses}
+                            toggleCourseDetails={toggleCourseDetails}
+                            handleSearchChange={handleSearchChange}
+                            searchQuery={searchQuery}
+                            togglePopup={togglePopup}
+                            visibleTimes={visibleTimes}
+                            showPopup={showPopup}
+                            popupPosition={popupPosition}
+                            popupWidth={popupWidth}
+                            isPositioned={isPositioned}
+                            popupRef={popupRef}
+                            filterCriteria={filterCriteria}
+                        />
+                    </div>
                 </>
             )}
+
         </>
     );
 };

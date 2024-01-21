@@ -44,21 +44,19 @@ const Navbar: React.FC = () => {
                             </Link>
 
                             {session && session.user && (
-                                <Link legacyBehavior href="/Student">
-                                    <a className="
-                                  text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent
-                                  hover:text-orange-600 hover:border hover:border-orange-600">
-                                        Student
-                                    </a>
-                                </Link>
+                                <>
+                                    <Link legacyBehavior href="/Student">
+                                        <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
+                                            Student
+                                        </a>
+                                    </Link>
+                                    <Link legacyBehavior href="/Schedules">
+                                        <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
+                                            Schedules
+                                        </a>
+                                    </Link>
+                                </>
                             )}
-
-                            <Link legacyBehavior href="/About">
-                                <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
-                                    About
-                                </a>
-                            </Link>
-
                         </div>
 
                         <div className="hidden sm:flex sm:items-center">

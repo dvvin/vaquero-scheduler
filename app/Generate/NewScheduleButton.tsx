@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useDeleteSchedule } from '../GetSessionData'; // Import the new hook
+import SaveScheduleButton from './SaveScheduleButton';
 
-const NewScheduleButton = ({ session, onNewScheduleClick }: {
+const NewScheduleButton = ({ session, onNewScheduleClick, onScheduleSaved }: {
     session: any,
     onNewScheduleClick: () => void;
+    onScheduleSaved: () => void;
 }) => {
 
     const [errorMessage, setErrorMessage] = useState('');
@@ -34,6 +36,7 @@ const NewScheduleButton = ({ session, onNewScheduleClick }: {
                 >
                     New Schedule
                 </button>
+                <SaveScheduleButton session={session} onScheduleSaved={onScheduleSaved} />
             </div>
             {errorMessage && (
                 <div className="text-center my-4">

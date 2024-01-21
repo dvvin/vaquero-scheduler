@@ -54,8 +54,10 @@ const CourseList: React.FC<CourseListProps> = ({
     const scheduleData = useScheduleData();
 
     const sessionData = session?.user;
+
     const matchingSchedule = useMemo(() => {
-        return scheduleData.find(schedule => schedule.StudentInfo?.email === sessionData?.email);
+        const userSchedules = scheduleData.filter(schedule => schedule.StudentInfo?.email === sessionData?.email);
+        return userSchedules[userSchedules.length - 1];
     }, [scheduleData, sessionData]);
 
     const selectedCampus = matchingSchedule?.campus || "";
