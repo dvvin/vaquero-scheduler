@@ -14,8 +14,6 @@ interface ProfessorInfo {
 interface ViewSchedulesProps {
     toggleCourseDetails: (scheduleIndex: number, number: string) => void;
     searchQuery: string;
-    handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    // expandedCourses: string[];
     showPopup: boolean;
     popupRef: React.RefObject<HTMLDivElement>;
     isPositioned: boolean;
@@ -30,9 +28,11 @@ interface ViewSchedulesProps {
         difficultyRating: string; // 1-4: "Low" or 5-7: "Moderate" or 8-10: "High" or "Any"
         teachingStyle: string; // "Strict" or "Free" or "Mixed" or "Any"
     };
-    scheduleExpandedCourses: Record<number, string[]>;
 
+    scheduleExpandedCourses: Record<number, string[]>;
     activePopupScheduleId: number | null;
+    scheduleSearchQueries: Record<number, string>;
+    handleSearchChange: (scheduleIndex: number, value: string) => void;
 }
 
 const isMorning = (time: string) => time.endsWith("A.M.") || time.endsWith("A.M");
@@ -41,17 +41,16 @@ const isAfternoon = (time: string) => time.endsWith("P.M.") || time.endsWith("P.
 const ViewSchedules: React.FC<ViewSchedulesProps> = ({
     toggleCourseDetails,
     searchQuery,
-    handleSearchChange,
-    // expandedCourses,
     showPopup,
     popupRef,
     isPositioned,
     popupPosition,
     visibleTimes,
     togglePopup,
-    // popupWidth,
     scheduleExpandedCourses,
-    activePopupScheduleId
+    activePopupScheduleId,
+    scheduleSearchQueries,
+    handleSearchChange,
 }) => {
 
     const session = useSessionData();
@@ -59,7 +58,7 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
     const scheduleData = useScheduleData();
 
     const sessionData = session?.user;
-    
+
     const userSchedules = useMemo(() => {
         return scheduleData.filter(schedule => schedule.StudentInfo?.email === sessionData?.email);
     }, [scheduleData, sessionData]);
@@ -98,10 +97,11 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
                 const scheduleTime = schedule.time || "";
                 const selectedDifficultyRating = schedule.difficultyRating || "";
                 const selectedTeachingStyle = schedule.teachingStyle || "";
+                const localSearchQuery = scheduleSearchQueries[scheduleIndex] || "";
 
                 const filteredCourses = courses.filter(course => {
-                    const matchesSearch = course.number.toLowerCase().includes(lowerCaseSearchQuery) ||
-                        course.name.toLowerCase().includes(lowerCaseSearchQuery);
+                    const matchesSearch = course.number.toLowerCase().includes(localSearchQuery) ||
+                        course.name.toLowerCase().includes(localSearchQuery);
 
                     const hasMatchingProfessor = course.professors.some((professor: ProfessorInfo) =>
                         (selectedCampus === "Any" || professor.campus.includes(selectedCampus)) &&
@@ -125,8 +125,8 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
                                         <input className="text-black py-2 px-4 border rounded-md shadow-sm focus:outline-none focus:ring-2 "
                                             type="search"
                                             placeholder="Search Courses"
-                                            value={searchQuery}
-                                            onChange={handleSearchChange}
+                                            value={localSearchQuery}
+                                            onChange={(e) => handleSearchChange(scheduleIndex, e.target.value)}
                                         />
                                     </div>
                                 </div>

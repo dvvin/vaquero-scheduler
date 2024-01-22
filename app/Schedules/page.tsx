@@ -15,7 +15,6 @@ const SchedulesPage: React.FC = () => {
     const [popupWidth, setPopupWidth] = useState(0);
     const [isPositioned, setIsPositioned] = useState(false);
     const popupRef = useRef<HTMLDivElement>(null);
-    // const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
     const [scheduleExpandedCourses, setScheduleExpandedCourses] = useState<Record<number, string[]>>({});
@@ -36,8 +35,13 @@ const SchedulesPage: React.FC = () => {
         });
     }, []);
 
-    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
+    const [scheduleSearchQueries, setScheduleSearchQueries] = useState<Record<number, string>>({});
+
+    const handleSearchChange = useCallback((scheduleIndex: number, value: string) => {
+        setScheduleSearchQueries(prev => ({
+            ...prev,
+            [scheduleIndex]: value
+        }));
     }, []);
 
     useEffect(() => {
@@ -97,6 +101,7 @@ const SchedulesPage: React.FC = () => {
                 <ViewSchedules
                     scheduleExpandedCourses={scheduleExpandedCourses}
                     toggleCourseDetails={toggleCourseDetails}
+                    scheduleSearchQueries={scheduleSearchQueries}
                     handleSearchChange={handleSearchChange}
                     searchQuery={searchQuery}
                     togglePopup={togglePopup}
