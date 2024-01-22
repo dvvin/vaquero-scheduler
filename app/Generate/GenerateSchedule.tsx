@@ -3,7 +3,7 @@ import Dropdown from './Dropdowns';
 import { useSessionData, useScheduleData } from '../GetSessionData';
 import GenerateButton from './GenerateButton';
 import CourseList from './CourseList';
-import NewScheduleButton from './NewScheduleButton';
+import NewScheduleButton from './DeleteScheduleButton';
 import SaveScheduleButton from './SaveScheduleButton';
 
 const GenerateSchedule: React.FC = () => {
@@ -37,13 +37,17 @@ const GenerateSchedule: React.FC = () => {
 
     const onScheduleGenerated = useCallback(() => {
         setIsScheduleGenerated(true);
-        setScheduleSaved(false); // Reset schedule saved state when a new schedule is generated
+        setScheduleSaved(false);
     }, []);
 
     const onScheduleSaved = () => {
         resetScheduleGeneration();
         setScheduleSaved(true);
-        setIsScheduleGenerated(false); // Ensure that CourseList is hidden after saving the schedule
+        setIsScheduleGenerated(false);
+
+        setTimeout(() => {
+            setScheduleSaved(false);
+        }, 2000);
     };
 
     const courseListStyle = {
@@ -51,12 +55,10 @@ const GenerateSchedule: React.FC = () => {
     };
 
     const shouldShowDropdownAndButton = useMemo(() => {
-        // Show dropdowns if a session exists and either a schedule is not yet generated or a schedule has been saved
         return session && !isScheduleGenerated || scheduleSaved;
     }, [session, isScheduleGenerated, scheduleSaved]);
 
     const shouldShowCourseList = useMemo(() => {
-        // Show CourseList only if a schedule has been generated and not yet saved
         return session && isScheduleGenerated && !scheduleSaved;
     }, [session, isScheduleGenerated, scheduleSaved]);
 
@@ -136,6 +138,12 @@ const GenerateSchedule: React.FC = () => {
                 </div>
             )}
 
+            {scheduleSaved && (
+                <div style={{ zIndex: 5000 }} className="absolute text-green-400 pt-44 top-0 left-1/2 transform -translate-x-1/2">
+                    Schedule saved successfully!
+                </div>
+            )}
+
             {isUserSignedIn && shouldShowDropdownAndButton && (
                 <div style={{ zIndex: 5000 }} className="absolute pt-28 top-0 left-1/2 transform -translate-x-1/2">
                     <Dropdown
@@ -160,17 +168,7 @@ const GenerateSchedule: React.FC = () => {
 
             {isUserSignedIn && shouldShowCourseList && (
                 <>
-                    <NewScheduleButton
-                        session={session}
-                        onNewScheduleClick={resetScheduleGeneration}
-                        onScheduleSaved={onScheduleSaved}
-                    />
-
-                    {scheduleSaved && (
-                        <div style={{ zIndex: 5000 }} className="absolute text-green-400 pt-48 top-0 left-1/2 transform -translate-x-1/2">
-                            Schedule saved successfully!
-                        </div>
-                    )}
+                    <SaveScheduleButton session={session} onScheduleSaved={onScheduleSaved} />
 
                     <div style={courseListStyle}>
                         <CourseList
@@ -190,7 +188,6 @@ const GenerateSchedule: React.FC = () => {
                     </div>
                 </>
             )}
-
         </>
     );
 };

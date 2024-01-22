@@ -1,6 +1,7 @@
 import React from "react";
 import { useMemo, useCallback } from "react";
 import { useSessionData, useCourseData, useScheduleData } from '../GetSessionData';
+import DeleteScheduleButton from "../Generate/DeleteScheduleButton";
 
 interface ProfessorInfo {
     name: string;
@@ -114,13 +115,20 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
                 });
 
                 return (
-                    <div key={scheduleIndex} className="w-3/4 pt-6 mx-auto">
+                    <div key={scheduleIndex} className="w-3/4 pt-4 mx-auto">
                         <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
                             <div className="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
                                 <div className="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent">
                                     <h3 className="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark">
                                         <span className="mr-3 font-semibold text-dark">Schedule {scheduleIndex + 1}</span>
                                     </h3>
+
+                                    <DeleteScheduleButton
+                                        session={session}
+                                        onDeleteScheduleClicked={() => { }}
+                                        onScheduleSaved={() => { }}
+                                    />
+
                                     <div className="relative mr-1 max-w-sm mx-auto mt-4">
                                         <input className="text-black py-2 px-4 border rounded-md shadow-sm focus:outline-none focus:ring-2 "
                                             type="search"

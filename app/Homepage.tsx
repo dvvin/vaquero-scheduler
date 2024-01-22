@@ -103,7 +103,7 @@ const Homepage: React.FC = () => {
                                                 View and delete your generated schedules.
                                             </p>
 
-                                            <Link legacyBehavior href="/About">
+                                            <Link legacyBehavior href="/Schedules">
                                                 <button
                                                     className="flex items-center mt-4 px-3 py-2 bg-orange-500 text-white text-sm uppercase font-medium rounded hover:bg-orange-600 focus:outline-none focus:bg-orange-500">
                                                     <span>View Schedules</span>

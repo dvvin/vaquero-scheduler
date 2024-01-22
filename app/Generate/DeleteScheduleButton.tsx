@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { useDeleteSchedule } from '../GetSessionData'; // Import the new hook
-import SaveScheduleButton from './SaveScheduleButton';
+import { useDeleteSchedule } from '../GetSessionData';
 
-const NewScheduleButton = ({ session, onNewScheduleClick, onScheduleSaved }: {
+const DeleteScheduleButton = ({ session, onDeleteScheduleClicked, onScheduleSaved }: {
     session: any,
-    onNewScheduleClick: () => void;
+    onDeleteScheduleClicked: () => void;
     onScheduleSaved: () => void;
 }) => {
 
@@ -19,7 +18,7 @@ const NewScheduleButton = ({ session, onNewScheduleClick, onScheduleSaved }: {
 
         try {
             await deleteSchedule(session.user.studentID);
-            onNewScheduleClick();
+            onDeleteScheduleClicked();
         } catch (error) {
             setErrorMessage('Error deleting schedule');
         }
@@ -27,16 +26,15 @@ const NewScheduleButton = ({ session, onNewScheduleClick, onScheduleSaved }: {
 
     return (
         <>
-            <div className="flex items-center justify-center pt-28">
+            <div className="flex items-center justify-center">
                 <button
                     onClick={handleDeleteSchedule}
                     className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm
-                    font-medium rounded-md text-gray-100 bg-blue-600 hover:bg-blue-700 focus:outline-none
-                    focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    font-medium rounded-md text-gray-100 bg-red-600 hover:bg-red-700 focus:outline-none
+                    focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
-                    New Schedule
+                    X
                 </button>
-                <SaveScheduleButton session={session} onScheduleSaved={onScheduleSaved} />
             </div>
             {errorMessage && (
                 <div className="text-center my-4">
@@ -47,4 +45,4 @@ const NewScheduleButton = ({ session, onNewScheduleClick, onScheduleSaved }: {
     );
 };
 
-export default NewScheduleButton;
+export default DeleteScheduleButton;
