@@ -17,6 +17,7 @@ export interface StudentInfo {
 }
 
 export interface ScheduleData {
+    id: string;
     StudentInfo: StudentInfo;
     campus: string;
     time: string;

@@ -100,13 +100,13 @@ const Homepage: React.FC = () => {
                                         <div className="px-10 max-w-xl">
                                             <h2 className="text-3xl text-orange-200 font-semibold">Schedules</h2>
                                             <p className="mt-2 text-xl text-gray-200">
-                                                View your generated schedules.
+                                                View and delete your generated schedules.
                                             </p>
 
                                             <Link legacyBehavior href="/About">
                                                 <button
                                                     className="flex items-center mt-4 px-3 py-2 bg-orange-500 text-white text-sm uppercase font-medium rounded hover:bg-orange-600 focus:outline-none focus:bg-orange-500">
-                                                    <span>read about</span>
+                                                    <span>View Schedules</span>
                                                     <svg className="h-5 w-5 mx-2" fill="none" strokeLinecap="round" strokeLinejoin="round"
                                                         strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path d="M17 8l4 4m0 0l-4 4m4-4H3"></path>

@@ -2,18 +2,12 @@
 import Navbar from '../Navbar/page';
 import ViewSchedules from './ViewSchedules';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
-import { useSessionData, useCourseData, useScheduleData } from '../GetSessionData';
 
 const SchedulesPage: React.FC = () => {
     const [selectedCampus, setSelectedCampus] = useState<string | null>(null);
     const [selectedClassTime, setSelectedClassTime] = useState<string | null>(null);
     const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
     const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
-
-    const [isScheduleGenerated, setIsScheduleGenerated] = useState(false);
-    const session = useSessionData();
-    const getScheduleData = useScheduleData();
-    const [scheduleSaved, setScheduleSaved] = useState(false);
 
     const [visibleTimes, setVisibleTimes] = useState<string[]>([]);
     const [showPopup, setShowPopup] = useState(false);
@@ -53,10 +47,31 @@ const SchedulesPage: React.FC = () => {
         }
     }, [showPopup, visibleTimes]);
 
-    const togglePopup = useCallback((times: string[], event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleOutsideClick = useCallback((event: MouseEvent) => {
+        if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+            setShowPopup(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (showPopup) {
+            document.addEventListener('click', handleOutsideClick);
+        } else {
+            document.removeEventListener('click', handleOutsideClick);
+        }
+
+        return () => {
+            document.removeEventListener('click', handleOutsideClick);
+        };
+    }, [showPopup]);
+
+    const [activePopupScheduleId, setActivePopupScheduleId] = useState<number | null>(null);
+
+    const togglePopup = useCallback((times: string[], scheduleId: number, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.stopPropagation();
         setVisibleTimes(times);
         setShowPopup(!showPopup);
+        setActivePopupScheduleId(scheduleId);
     }, [showPopup]);
 
     const filterCriteria = useMemo(() => ({
@@ -84,6 +99,7 @@ const SchedulesPage: React.FC = () => {
                     isPositioned={isPositioned}
                     popupRef={popupRef}
                     filterCriteria={filterCriteria}
+                    activePopupScheduleId={activePopupScheduleId}
                 />
             </main>
         </>

@@ -1,7 +1,6 @@
 import React from "react";
 import { useMemo, useCallback } from "react";
 import { useSessionData, useCourseData, useScheduleData } from '../GetSessionData';
-import { useEffect, useState } from "react";
 
 interface ProfessorInfo {
     name: string;
@@ -22,7 +21,7 @@ interface ViewSchedulesProps {
     isPositioned: boolean;
     popupPosition: { top: number, left: number };
     visibleTimes: string[];
-    togglePopup: (times: string[], event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    togglePopup: (times: string[], scheduleId: number, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     popupWidth: number;
 
     filterCriteria: {
@@ -31,6 +30,8 @@ interface ViewSchedulesProps {
         difficultyRating: string; // 1-4: "Low" or 5-7: "Moderate" or 8-10: "High" or "Any"
         teachingStyle: string; // "Strict" or "Free" or "Mixed" or "Any"
     };
+
+    activePopupScheduleId: number | null;
 }
 
 const isMorning = (time: string) => time.endsWith("A.M.") || time.endsWith("A.M");
@@ -48,6 +49,7 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
     visibleTimes,
     togglePopup,
     // popupWidth,
+    activePopupScheduleId
 }) => {
 
     const session = useSessionData();
@@ -63,8 +65,6 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
     const userSchedules = useMemo(() => {
         return scheduleData.filter(schedule => schedule.StudentInfo?.email === sessionData?.email);
     }, [scheduleData, sessionData]);
-
-    const selectedClassTime = matchingSchedule?.time || "";
 
     const getDifficultyRating = useMemo(() => {
         return (rating: number): string => {
@@ -84,13 +84,13 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
 
     const lowerCaseSearchQuery = useMemo(() => searchQuery.toLowerCase(), [searchQuery]);
 
-    const updatedTogglePopup = useCallback((times: string[], scheduleTime: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const updatedTogglePopup = useCallback((times: string[], scheduleTime: string, scheduleId: number, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const filteredTimes = times.filter(time =>
             scheduleTime === "Any" ||
             (scheduleTime === "Morning" && isMorning(time)) ||
             (scheduleTime === "Afternoon" && isAfternoon(time))
         );
-        togglePopup(filteredTimes, event);
+        togglePopup(filteredTimes, scheduleId, event);
     }, [togglePopup]);
 
     return (
@@ -190,8 +190,8 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
                                                                                             <td className="pl-0 text-center">
                                                                                                 <span className={
                                                                                                     `text-start align-baseline inline-flex px-4 py-3 mr-auto items-center
-                                                                font-semibold text-[.95rem] leading-none rounded-lg
-                                                                ${professor.difficultyRating >= 1 && professor.difficultyRating <= 4
+                                                                                                        font-semibold text-[.95rem] leading-none rounded-lg
+                                                                                                        ${professor.difficultyRating >= 1 && professor.difficultyRating <= 4
                                                                                                         ? "text-success bg-success-light"
                                                                                                         : professor.difficultyRating >= 5 && professor.difficultyRating <= 7
                                                                                                             ? "text-warning bg-warning-light"
@@ -225,11 +225,11 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
                                                                                             </td>
 
                                                                                             <td className="p-3 pr-2 text-center">
-                                                                                                <button onClick={(e) => updatedTogglePopup(professor.time, scheduleTime, e)}
+                                                                                                <button onClick={(e) => updatedTogglePopup(professor.time, scheduleTime, scheduleIndex, e)}
                                                                                                     className="relative text-secondary-dark bg-light-dark hover:text-primary
-                                                                flex items-center h-[25px] w-[25px] text-base font-medium leading-normal
-                                                                text-center align-middle cursor-pointer rounded-2xl transition-colors
-                                                                duration-200 ease-in-out shadow-none border-0 justify-center m-auto">
+                                                                                                        flex items-center h-[25px] w-[25px] text-base font-medium leading-normal
+                                                                                                        text-center align-middle cursor-pointer rounded-2xl transition-colors
+                                                                                                        duration-200 ease-in-out shadow-none border-0 justify-center m-auto">
                                                                                                     <span className="flex items-center justify-center pl-0 m-0 leading-none shrink-0 ">
                                                                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                                                                             strokeWidth="1.5" stroke="currentColor" className="w-4 h-4 ">
@@ -250,7 +250,8 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
                                                 ))}
                                             </tbody>
                                         </table>
-                                        {showPopup && (
+
+                                        {showPopup && activePopupScheduleId === scheduleIndex && (
                                             <div
                                                 ref={popupRef}
                                                 className="absolute w-24 border text-black border-gray-300 bg-white p-2 shadow-lg z-10"
