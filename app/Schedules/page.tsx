@@ -15,16 +15,24 @@ const SchedulesPage: React.FC = () => {
     const [popupWidth, setPopupWidth] = useState(0);
     const [isPositioned, setIsPositioned] = useState(false);
     const popupRef = useRef<HTMLDivElement>(null);
-    const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
+    // const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const toggleCourseDetails = useCallback((number: string) => {
-        setExpandedCourses(prev => {
-            if (prev.includes(number)) {
-                return prev.filter(cn => cn !== number);
+    const [scheduleExpandedCourses, setScheduleExpandedCourses] = useState<Record<number, string[]>>({});
+
+    const toggleCourseDetails = useCallback((scheduleIndex: number, number: string) => {
+        setScheduleExpandedCourses((prev) => {
+            const updatedExpandedCourses = { ...prev };
+            if (updatedExpandedCourses[scheduleIndex]?.includes(number)) {
+                updatedExpandedCourses[scheduleIndex] = updatedExpandedCourses[scheduleIndex].filter(
+                    (cn) => cn !== number
+                );
             } else {
-                return [...prev, number];
+                updatedExpandedCourses[scheduleIndex] = updatedExpandedCourses[scheduleIndex]
+                    ? [...updatedExpandedCourses[scheduleIndex], number]
+                    : [number];
             }
+            return updatedExpandedCourses;
         });
     }, []);
 
@@ -87,7 +95,7 @@ const SchedulesPage: React.FC = () => {
             <main className="bg-gray-100 min-h-screen">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/loopple-public-assets@main/riva-dashboard-tailwind/riva-dashboard.css" />
                 <ViewSchedules
-                    expandedCourses={expandedCourses}
+                    scheduleExpandedCourses={scheduleExpandedCourses}
                     toggleCourseDetails={toggleCourseDetails}
                     handleSearchChange={handleSearchChange}
                     searchQuery={searchQuery}

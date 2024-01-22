@@ -12,10 +12,10 @@ interface ProfessorInfo {
 }
 
 interface ViewSchedulesProps {
-    toggleCourseDetails: (number: string) => void;
+    toggleCourseDetails: (scheduleIndex: number, number: string) => void;
     searchQuery: string;
     handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    expandedCourses: string[];
+    // expandedCourses: string[];
     showPopup: boolean;
     popupRef: React.RefObject<HTMLDivElement>;
     isPositioned: boolean;
@@ -30,6 +30,7 @@ interface ViewSchedulesProps {
         difficultyRating: string; // 1-4: "Low" or 5-7: "Moderate" or 8-10: "High" or "Any"
         teachingStyle: string; // "Strict" or "Free" or "Mixed" or "Any"
     };
+    scheduleExpandedCourses: Record<number, string[]>;
 
     activePopupScheduleId: number | null;
 }
@@ -41,7 +42,7 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
     toggleCourseDetails,
     searchQuery,
     handleSearchChange,
-    expandedCourses,
+    // expandedCourses,
     showPopup,
     popupRef,
     isPositioned,
@@ -49,6 +50,7 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
     visibleTimes,
     togglePopup,
     // popupWidth,
+    scheduleExpandedCourses,
     activePopupScheduleId
 }) => {
 
@@ -57,11 +59,7 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
     const scheduleData = useScheduleData();
 
     const sessionData = session?.user;
-
-    const matchingSchedule = useMemo(() => {
-        return scheduleData.find(schedule => schedule.StudentInfo?.email === sessionData?.email);
-    }, [scheduleData, sessionData]);
-
+    
     const userSchedules = useMemo(() => {
         return scheduleData.filter(schedule => schedule.StudentInfo?.email === sessionData?.email);
     }, [scheduleData, sessionData]);
@@ -152,12 +150,14 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
                                                             </td>
                                                             <td className="p-3 pl-0">
                                                                 <a className="font-semibold cursor-pointer text-lg/normal text-secondary-inverse hover:text-primary"
-                                                                    onClick={() => toggleCourseDetails(course.number)}>
+                                                                    onClick={() => toggleCourseDetails(scheduleIndex, course.number)}
+                                                                >
                                                                     {course.name}
                                                                 </a>
                                                             </td>
                                                         </tr>
-                                                        {expandedCourses.includes(course.number) && (
+
+                                                        {scheduleExpandedCourses[scheduleIndex]?.includes(course.number) && (
                                                             <tr className="border-b border-dashed last:border-b-0">
                                                                 <td colSpan={7}>
                                                                     <div className="w-full">
