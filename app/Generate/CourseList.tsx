@@ -1,7 +1,6 @@
 import React from "react";
 import { useMemo, useCallback } from "react";
 import { useSessionData, useCourseData, useScheduleData } from '../GetSessionData';
-import SaveScheduleButton from "./SaveScheduleButton";
 
 interface ProfessorInfo {
     name: string;

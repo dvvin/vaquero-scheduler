@@ -1,6 +1,6 @@
 import React from "react";
 import { useMemo, useCallback } from "react";
-import { useSessionData, useCourseData, useScheduleData } from '../GetSessionData';
+import { useSessionData, useCourseData, useScheduleData, useDeleteSchedule } from '../GetSessionData';
 import DeleteScheduleButton from "../Generate/DeleteScheduleButton";
 
 interface ProfessorInfo {
@@ -57,6 +57,7 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
     const session = useSessionData();
     const courses = useCourseData();
     const scheduleData = useScheduleData();
+    const deleteSchedule = useDeleteSchedule();
 
     const sessionData = session?.user;
 
@@ -79,8 +80,6 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
             (scheduleTime === "Afternoon" && isAfternoon(time))
         );
     };
-
-    const lowerCaseSearchQuery = useMemo(() => searchQuery.toLowerCase(), [searchQuery]);
 
     const updatedTogglePopup = useCallback((times: string[], scheduleTime: string, scheduleId: number, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const filteredTimes = times.filter(time =>
@@ -114,6 +113,18 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
                     return matchesSearch && hasMatchingProfessor;
                 });
 
+                const handleDeleteSchedule = async (scheduleId: string) => {
+                    if (session && session.user) {
+                        try {
+                            await deleteSchedule(scheduleId, session.user.studentID);
+                            console.log('Schedule deleted successfully');
+                        } catch (error) {
+                            console.error('Error deleting schedule:', error);
+                        }
+                    } else {
+                        console.error('User session not found');
+                    }
+                };
                 return (
                     <div key={scheduleIndex} className="w-3/4 pt-4 mx-auto">
                         <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
@@ -125,8 +136,7 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
 
                                     <DeleteScheduleButton
                                         session={session}
-                                        onDeleteScheduleClicked={() => { }}
-                                        onScheduleSaved={() => { }}
+                                        onDeleteScheduleClicked={() => handleDeleteSchedule(schedule.id)}
                                     />
 
                                     <div className="relative mr-1 max-w-sm mx-auto mt-4">

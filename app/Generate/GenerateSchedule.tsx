@@ -3,7 +3,6 @@ import Dropdown from './Dropdowns';
 import { useSessionData, useScheduleData } from '../GetSessionData';
 import GenerateButton from './GenerateButton';
 import CourseList from './CourseList';
-import NewScheduleButton from './DeleteScheduleButton';
 import SaveScheduleButton from './SaveScheduleButton';
 
 const GenerateSchedule: React.FC = () => {

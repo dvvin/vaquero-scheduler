@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useDeleteSchedule } from '../GetSessionData';
 
-const DeleteScheduleButton = ({ session, onDeleteScheduleClicked, onScheduleSaved }: {
+const DeleteScheduleButton = ({ session, onDeleteScheduleClicked }: {
     session: any,
     onDeleteScheduleClicked: () => void;
-    onScheduleSaved: () => void;
 }) => {
 
     const [errorMessage, setErrorMessage] = useState('');
@@ -17,7 +16,7 @@ const DeleteScheduleButton = ({ session, onDeleteScheduleClicked, onScheduleSave
         }
 
         try {
-            await deleteSchedule(session.user.studentID);
+            await deleteSchedule(session.user.studentID, session.user.id);
             onDeleteScheduleClicked();
         } catch (error) {
             setErrorMessage('Error deleting schedule');

@@ -132,12 +132,12 @@ export const useRegister = () => {
 };
 
 export const useDeleteSchedule = () => {
-    const deleteSchedule = async (studentID: string) => {
+    const deleteSchedule = async (scheduleId: string, studentID: string) => {
         try {
             const response = await fetch(process.env.NEXT_PUBLIC_FETCH_NEW_SCHEDULE || '', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ studentID }),
+                body: JSON.stringify({ scheduleId, studentID }),
             });
 
             const data = await response.json();
@@ -150,3 +150,4 @@ export const useDeleteSchedule = () => {
 
     return deleteSchedule;
 };
+
