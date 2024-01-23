@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Dropdown from './Dropdowns';
-import { useSessionData, useScheduleData } from '../GetSessionData';
+import { useSessionData } from '../GetSessionData';
 import GenerateButton from './GenerateButton';
 import CourseList from './CourseList';
 import SaveScheduleButton from './SaveScheduleButton';
@@ -13,7 +13,6 @@ const GenerateSchedule: React.FC = () => {
 
     const [isScheduleGenerated, setIsScheduleGenerated] = useState(false);
     const session = useSessionData();
-    const getScheduleData = useScheduleData();
     const [scheduleSaved, setScheduleSaved] = useState(false);
 
     const [visibleTimes, setVisibleTimes] = useState<string[]>([]);
@@ -26,13 +25,6 @@ const GenerateSchedule: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     const isUserSignedIn = session != null;
-
-    const isSessionDataValid = useCallback(() => {
-        return getScheduleData.some(schedule =>
-            schedule.StudentInfo.email === session?.user.email &&
-            schedule.StudentInfo.studentID === session?.user.studentID
-        );
-    }, [getScheduleData, session?.user.email, session?.user.studentID]);
 
     const onScheduleGenerated = useCallback(() => {
         setIsScheduleGenerated(true);

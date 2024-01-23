@@ -51,7 +51,7 @@ const CourseList: React.FC<CourseListProps> = ({
 
     const session = useSessionData();
     const courses = useCourseData();
-    const scheduleData = useScheduleData();
+    const { scheduleData } = useScheduleData(); // Destructuring scheduleData
 
     const sessionData = session?.user;
 

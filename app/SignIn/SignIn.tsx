@@ -39,7 +39,7 @@ const SignInForm: React.FC = () => {
             if (result && result.error) {
                 setErrorMessage(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error);
             } else {
-                router.push('/Student');
+                router.push('/');
             }
         } catch (error) {
             setErrorMessage('An error occurred. Please try again.');

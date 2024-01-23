@@ -53,24 +53,25 @@ export const useSessionData = (): SessionData | null => {
     return session;
 }
 
-export const useScheduleData = (): ScheduleData[] => {
+export const useScheduleData = () => {
     const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
 
+    const fetchScheduleData = async () => {
+        try {
+            const response = await fetch(process.env.NEXT_PUBLIC_FETCH_SCHEDULE || '');
+            const data: ScheduleData[] = await response.json();
+            setScheduleData(data);
+        } catch (error) {
+            console.error('Error fetching schedule data:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchScheduleData = async () => {
-            try {
-                const response = await fetch(process.env.NEXT_PUBLIC_FETCH_SCHEDULE || '');
-                const data: ScheduleData[] = await response.json();
-                setScheduleData(data);
-            } catch (error) {
-                console.error('Error fetching schedule data:', error);
-            }
-        };
         fetchScheduleData();
     }, []);
 
-    return scheduleData;
-}
+    return { scheduleData, refreshScheduleData: fetchScheduleData };
+};
 
 export const useCourseData = (): CourseData[] => {
     const [courseData, setCourseData] = useState<CourseData[]>([]);

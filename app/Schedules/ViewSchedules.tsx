@@ -56,7 +56,7 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
 
     const session = useSessionData();
     const courses = useCourseData();
-    const scheduleData = useScheduleData();
+    const { scheduleData, refreshScheduleData } = useScheduleData(); 
     const deleteSchedule = useDeleteSchedule();
 
     const sessionData = session?.user;
@@ -118,6 +118,7 @@ const ViewSchedules: React.FC<ViewSchedulesProps> = ({
                         try {
                             await deleteSchedule(scheduleId, session.user.studentID);
                             console.log('Schedule deleted successfully');
+                            await refreshScheduleData();
                         } catch (error) {
                             console.error('Error deleting schedule:', error);
                         }

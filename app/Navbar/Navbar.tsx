@@ -31,14 +31,14 @@ const Navbar: React.FC = () => {
                         <div className="hidden sm:flex sm:items-center">
                             <Link legacyBehavior href="/Generate">
                                 <a className="
-                            text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent
+                            text-gray-800 text-sm mr-2 font-semibold px-4 py-1 rounded-lg border border-transparent
                             hover:text-orange-600 hover:border hover:border-orange-600">
                                     Generate
                                 </a>
                             </Link>
 
                             <Link legacyBehavior href="/Catalogs">
-                                <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
+                                <a className="text-gray-800 text-sm mr-2 font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
                                     Catalogs
                                 </a>
                             </Link>
@@ -46,12 +46,12 @@ const Navbar: React.FC = () => {
                             {session && session.user && (
                                 <>
                                     <Link legacyBehavior href="/Student">
-                                        <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
+                                        <a className="text-gray-800 text-sm mr-2 font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
                                             Student
                                         </a>
                                     </Link>
                                     <Link legacyBehavior href="/Schedules">
-                                        <a className="text-gray-800 text-sm font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
+                                        <a className="text-gray-800 text-sm mr-2 font-semibold px-4 py-1 rounded-lg border border-transparent hover:text-orange-600 hover:border hover:border-orange-600">
                                             Schedules
                                         </a>
                                     </Link>
@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
                                 </>
                             ) : (
                                 <Link legacyBehavior href="/SignIn">
-                                    <a className="ml-4 text-white bg-orange-600 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-700">
+                                    <a className="ml-4 text-white bg-orange-500 text-sm font-semibold px-4 py-1 rounded-lg hover:bg-orange-600">
                                         Sign In
                                     </a>
                                 </Link>
