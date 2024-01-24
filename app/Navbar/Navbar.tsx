@@ -3,17 +3,21 @@ import Link from 'next/link';
 import vaqueroLogo from '../images/vaquero_trans.png';
 import { signOut } from 'next-auth/react';
 import { useSessionData } from '../GetSessionData';
+import { useRouter } from 'next/navigation';
 
 const Navbar: React.FC = () => {
     const session = useSessionData();
+    const router = useRouter();
+
     const handleSignOut = async () => {
         try {
-            await signOut();
-            window.location.reload();
+            await signOut({ redirect: false });
+            router.push('/');
         } catch (error) {
             console.error('Error signing out:', error);
         }
     };
+
 
     return (
         <div style={{ zIndex: 6000 }} className="fixed top-0 bg-gray-100 font-sans w-full m-0 z-50">
